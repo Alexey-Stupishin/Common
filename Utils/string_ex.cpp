@@ -11,7 +11,7 @@ size_t str_ex_tolower(char *s)
     std::string ss = s;
     std::string slow = str_ex_tolower(ss);
     size_t length = slow.length();
-    strcpy(s, slow.c_str());
+    memcpy(s, slow.c_str(), length);
 
     return length;
 }
@@ -27,6 +27,6 @@ bool str_ex_compare(char *s1, char *s2, bool case_sens)
         std::string ss1 = s1, ss2 = s2;
         std::string sslowl = str_ex_tolower(ss1);
         std::string sslow2 = str_ex_tolower(ss2);
-        return !strcmp(sslowl.c_str(), sslow2.c_str());
+        return sslowl.compare(sslow2) == 0;
     }
 }
