@@ -289,13 +289,7 @@ uint32_t CagpWiegelmann::ActionCore()
 
         s->mult(slosW);
         v->mult(vdircos, s);
-#ifdef _DEBUG_TRACE2
-        debugtrace2->Say("*cos");
-#endif
         vF->subPhys(v);
-#ifdef _DEBUG_TRACE2
-        debugtrace2->Say("F");
-#endif
     }
 
 	return 0;

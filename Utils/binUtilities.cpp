@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "string_ex.h"
 
 #include "binUtilities.h"
 
@@ -112,7 +113,7 @@ size_t CbinDataStruct::Write(FILE * fid, REALTYPE__ *d, size_t lng, char * name)
     data.N[0] = (int)lng;
     data.N64[0] = lng;
     data.type = MFO_TYPE_DOUBLE;
-    data.data = d;
+    data.data = (uint8_t *)d;
 
     return Write(fid, &data);
 }
@@ -126,7 +127,7 @@ size_t CbinDataStruct::Write(FILE * fid, int *v, size_t lng, char * name)
     data.N[0] = (int)lng;
     data.N64[0] = lng;
     data.type = MFO_TYPE_INT32;
-    data.data = v;
+    data.data = (uint8_t *)v;
 
     return Write(fid, &data);
 }
@@ -140,7 +141,7 @@ size_t CbinDataStruct::Write64(FILE * fid, int64_t *v, size_t lng, char * name)
     data.N[0] = (int)lng;
     data.N64[0] = lng;
     data.type = MFO_TYPE_INT64;
-    data.data = v;
+    data.data = (uint8_t *)v;
 
     return Write(fid, &data);
 }
@@ -197,7 +198,7 @@ size_t CbinDataStruct::Write(FILE * fid, CbinData *data)
 
     size_t chunk = 0x20000000;
     size_t rest = nbytes;
-    uint8_t *p = (uint8_t *)(data->data);
+    uint8_t *p = data->data;
     while (rest > 0)
     {
         size_t currw = chunk;
@@ -250,11 +251,11 @@ int CbinDataStruct::findEntry(char *entry)
 {
     int idx = -1;
     for (int k = 0; k < nRead; k++)
-    if (!strcmp(data[k].name, entry))
-    {
-        idx = k;
-        break;
-    }
+        if (!str_ex_compare(data[k].name, entry, false))
+        {
+            idx = k;
+            break;
+        }
 
     return idx;
 }

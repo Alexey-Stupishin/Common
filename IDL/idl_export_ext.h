@@ -5,22 +5,11 @@
 #include "idl_export.h"
 #include <map>
 #include <string>
+#include "string_ex.h"
 
 #define MFOMAPBUFLEN 256
 #define MFOMAPMAXITEMS 256
 #define IDLTERMINATIONKEY "!____idl_map_terminator_key___!"
-
-char *strlwr(char *str)
-{
-  unsigned char *p = (unsigned char *)str;
-
-  while (*p) {
-     *p = tolower((unsigned char)*p);
-      p++;
-  }
-
-  return str;
-}
 
 class CidlPassParameterItem
 {
@@ -41,7 +30,7 @@ public:
         {
             memset(tItemName, 0, MFOMAPBUFLEN);
             strncpy(tItemName, itemName.s, lng);
-            strlwr(tItemName);
+            str_ex_tolower(tItemName);
 
             if (!strcmp(tItemName, IDLTERMINATIONKEY))
                 return Status::End;

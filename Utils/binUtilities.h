@@ -10,7 +10,7 @@ enum {MFO_TYPE_NONE = 0, MFO_TYPE_INT32 = 3, MFO_TYPE_INT64 = 4, MFO_TYPE_DOUBLE
 class CbinData
 {
 public:
-    void *data;
+    uint8_t *data;
     int nDims;
     int N[8];
     uint64_t N64[8];
