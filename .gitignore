@@ -1,10 +1,3 @@
 # Specify filepatterns you want git to ignore.
-/BaseMath/agmRKF45.o
-/BaseMath/agmScalarField.o
-/BaseMath/agmScalarFieldOps.o
-/BaseMath/agmVectorField.o
-/BaseMath/agmVectorFieldOps.o
-/BaseMath/agmVectorFieldOpsLine.o
-/BasePhysics/agpWiegelmann.o
-/Multithread/TaskQueueProcessor.o
-/Utils/binUtilities.o
+#
+*.o
