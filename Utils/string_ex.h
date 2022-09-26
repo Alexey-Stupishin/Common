@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <string>
+#include <cstring>
 #include <algorithm>
 
 std::string str_ex_tolower(std::string s);
