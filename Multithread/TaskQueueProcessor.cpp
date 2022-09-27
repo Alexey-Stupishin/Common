@@ -69,7 +69,10 @@ void supervisorFunc(ATQPSupervisor* supervisor)
         {
             std::unique_lock<std::mutex> locker_f(global_mutex_finish);
             if (global_process_counter == 0)
+            {
                 done = true;
+                console_debug("supervisor done");
+            }
         }
 
         if (!done)
@@ -91,6 +94,8 @@ void supervisorFunc(ATQPSupervisor* supervisor)
             }
         }
     }
+
+    console_debug("end of supervisor");
 }
 
 //-----------------------------------------------------------------------------
