@@ -116,6 +116,8 @@ unsigned long TaskQueueProcessor::proceed(std::vector<ATQPProcessor *>& processo
         t.join();
     supervisorThread.join();
 
+    console_debug("terminated " << num_proc << " processors")
+
     for (int i = 0; i < num_proc; i++)
     {
         delete global_mutexes_task[i];
@@ -123,13 +125,15 @@ unsigned long TaskQueueProcessor::proceed(std::vector<ATQPProcessor *>& processo
         delete global_queues_task[i];
     }
 
+    console_debug("objects deleted")
+
     global_queue_query.empty();
 
     global_mutexes_task.clear();
     global_checks_task.clear();
     global_queues_task.clear();
 
-    console_debug("terminated")
+    console_debug("objects clear")
 
     return 0;
 }
