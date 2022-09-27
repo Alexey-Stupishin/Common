@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <thread>
 #include <mutex>
+#include "console_debug.h"
 
 std::mutex              global_mutex_finish;
 std::size_t             global_process_counter;
@@ -17,29 +18,18 @@ std::vector<std::mutex *>              global_mutexes_task;
 std::vector<std::condition_variable *> global_checks_task;
 std::vector<std::queue<ATQPTask *> *>  global_queues_task;
 
-#ifdef DEBUG_CPP11THREAD
-std::mutex              global_mutex_print;
-#define debugout(str) \
-    { \
-        std::unique_lock<std::mutex> locker_p(global_mutex_print); \
-        std::cout << str << std::endl; \
-    }   
-#else
-#define debugout(str)
-#endif
-
 //-----------------------------------------------------------------------------
 void processorFunc(ATQPProcessor *processor)
 {
     int id = processor->getID();
-    debugout("[processor " << id << "]\trunning...")
+    console_debug("[processor " << id << "]\trunning...")
 
     bool finish = false;
     while (!finish)
     {
         if (processor->initialized())
         {
-            debugout("[processor " << id << "]\tproceeds task by address " << processor->getTask());
+            console_debug("[processor " << id << "]\tproceeds task by address " << processor->getTask());
             processor->proceed();
         }
 
@@ -63,7 +53,7 @@ void processorFunc(ATQPProcessor *processor)
     {
         std::unique_lock<std::mutex> locker_f(global_mutex_finish);
         global_process_counter--;
-        debugout("[processor " << id << "]\tremain(s) " << global_process_counter << " active processor(s)");
+        console_debug("[processor " << id << "]\tremain(s) " << global_process_counter << " active processor(s)");
         processor->reset();
     }
 }
@@ -71,7 +61,7 @@ void processorFunc(ATQPProcessor *processor)
 //-----------------------------------------------------------------------------
 void supervisorFunc(ATQPSupervisor* supervisor)
 {
-    debugout("[supervisor]\trunning...");
+    console_debug("[supervisor]\trunning...");
 
     bool done = false;
     while (!done)
@@ -97,7 +87,7 @@ void supervisorFunc(ATQPSupervisor* supervisor)
                     global_checks_task[id]->notify_one();
                 }
                 global_queue_query.pop();
-                debugout("[supervisor]\tquery task from processor " << id << ", task address " << task)
+                console_debug("[supervisor]\tquery task from processor " << id << ", task address " << task)
             }
         }
     }
@@ -139,7 +129,7 @@ unsigned long TaskQueueProcessor::proceed(std::vector<ATQPProcessor *>& processo
     global_checks_task.clear();
     global_queues_task.clear();
 
-    debugout("terminated")
+    console_debug("terminated")
 
     return 0;
 }
@@ -246,7 +236,7 @@ int TaskQueueProcessor::getProcInfo(int nThreadsInitial)
             if (!finish)
             {   // cast void *_task to the real object:
                 this_task = (QPTask *)_task;
-                debugout("  [child processor " << id << "]\tget task " << this_task->getID() << " (task address " << _task << "), task data " << this_task->getData());
+                console_debug("  [child processor " << id << "]\tget task " << this_task->getID() << " (task address " << _task << "), task data " << this_task->getData());
             }
             return finish;
         }
@@ -254,7 +244,7 @@ int TaskQueueProcessor::getProcInfo(int nThreadsInitial)
         virtual bool proceed()
         {
             int delay = this_task->getData() /2 + (*p_generator)() % 5;
-            debugout("  [child processor " << id << "]\ttask " << this_task->getID() << " will be proceeded in " << delay << " seconds");
+            console_debug("  [child processor " << id << "]\ttask " << this_task->getID() << " will be proceeded in " << delay << " seconds");
             std::this_thread::sleep_for(std::chrono::seconds(delay));
             return true;
         }
