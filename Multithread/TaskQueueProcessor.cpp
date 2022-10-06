@@ -7,7 +7,6 @@
 #include <mutex>
 #include "console_debug.h"
 
-std::mutex              global_mutex_finish;
 std::size_t             global_process_counter;
 
 std::mutex              global_mutex_query;
@@ -51,10 +50,11 @@ void processorFunc(ATQPProcessor *processor)
     }
 
     {
-        std::unique_lock<std::mutex> locker_f(global_mutex_finish);
+        std::unique_lock<std::mutex> locker(global_mutex_query);
         global_process_counter--;
         console_debug("[processor " << id << "]\tremain(s) " << global_process_counter << " active processor(s)");
         processor->reset();
+        global_check_query.notify_one();
     }
 }
 
@@ -66,32 +66,25 @@ void supervisorFunc(ATQPSupervisor* supervisor)
     bool done = false;
     while (!done)
     {
+        std::unique_lock<std::mutex> locker(global_mutex_query);
+        global_check_query.wait(locker, [&]() { return !global_queue_query.empty() || global_process_counter == 0; });
+        if (global_process_counter == 0)
         {
-            std::unique_lock<std::mutex> locker_f(global_mutex_finish);
-            if (global_process_counter == 0)
-            {
-                done = true;
-                console_debug("supervisor done");
-            }
+            done = true;
+            console_debug("supervisor done");
         }
-
-        if (!done)
+        while (!global_queue_query.empty() && !done)
         {
-            std::unique_lock<std::mutex> locker(global_mutex_query);
-            global_check_query.wait(locker, [&]() { return !global_queue_query.empty(); });
-            while (!global_queue_query.empty())
+            int id = global_queue_query.front();
+            ATQPTask* task;
             {
-                int id = global_queue_query.front();
-                ATQPTask* task;
-                {
-                    std::unique_lock<std::mutex> locker_m(*(global_mutexes_task[id]));
-                    supervisor->getTask(task);
-                    global_queues_task[id]->push(task);
-                    global_checks_task[id]->notify_one();
-                }
-                global_queue_query.pop();
-                console_debug("[supervisor]\tquery task from processor " << id << ", task address " << task)
+                std::unique_lock<std::mutex> locker_m(*(global_mutexes_task[id]));
+                supervisor->getTask(task);
+                global_queues_task[id]->push(task);
+                global_checks_task[id]->notify_one();
             }
+            global_queue_query.pop();
+            console_debug("[supervisor]\tquery task from processor " << id << ", task address " << task)
         }
     }
 
