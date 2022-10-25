@@ -58,7 +58,7 @@ public:
     static int WriteFooter(FILE *fid);
 
     int *GetDimensions(int idx = 0);
-    size_t *GetDimensions64(int idx = 0);
+    uint64_t *GetDimensions64(int idx = 0);
     int GetNDims(int idx = 0);
     int findEntry(char *);
 };
