@@ -3,15 +3,15 @@
 class CagmMetricsJB
 {
 public:
-    REALTYPE__ *m;
-    REALTYPE__ *mj;
-    REALTYPE__ *mB;
+    REALTYPE_A *m;
+    REALTYPE_A *mj;
+    REALTYPE_A *mB;
 
     CagmMetricsJB(int length)
     {
-        m = new REALTYPE__[length];
-        mj = new REALTYPE__[length];
-        mB = new REALTYPE__[length];
+        m = new REALTYPE_A[length];
+        mj = new REALTYPE_A[length];
+        mB = new REALTYPE_A[length];
         for (int k = 0; k < length; k++)
         {
             m[k] = 0;
@@ -61,13 +61,13 @@ public:
 class CagmMetricsCos
 {
 public:
-    REALTYPE__ *c;
-    REALTYPE__ *B4c;
+    REALTYPE_A *c;
+    REALTYPE_A *B4c;
 
     CagmMetricsCos(int length)
     {
-        c = new REALTYPE__[length];
-        B4c = new REALTYPE__[length];
+        c = new REALTYPE_A[length];
+        B4c = new REALTYPE_A[length];
         for (int k = 0; k < length; k++)
         {
             c[k] = 0;
@@ -116,11 +116,11 @@ class CagmMetrics
 public:
     int *depth;
     int *iterN;
-    REALTYPE__ *steps;
+    REALTYPE_A *steps;
     int *stepNs;
-    REALTYPE__ *dLs;
-    REALTYPE__ *dtheta;
-    REALTYPE__ *residual;
+    REALTYPE_A *dLs;
+    REALTYPE_A *dtheta;
+    REALTYPE_A *residual;
     CagmMetricsLim *FFtheta;
     CagmMetricsLim *dabs;
     CagmMetricsLim *dcos;
@@ -133,11 +133,11 @@ public:
     {
         depth = new int[length];
         iterN = new int[length];
-        steps = new REALTYPE__[length];
+        steps = new REALTYPE_A[length];
         stepNs = new int[length];
-        dLs = new REALTYPE__[length];
-        dtheta = new REALTYPE__[length];
-        residual = new REALTYPE__[length];
+        dLs = new REALTYPE_A[length];
+        dtheta = new REALTYPE_A[length];
+        residual = new REALTYPE_A[length];
         for (int k = 0; k < length; k++)
         {
             depth[k] = 0;
@@ -174,7 +174,7 @@ public:
         delete pcm;
     }
 
-    void setBase(REALTYPE__ _dLs, REALTYPE__ _step, int _stepN, int _depth, int _iterN)
+    void setBase(REALTYPE_A _dLs, REALTYPE_A _step, int _stepN, int _depth, int _iterN)
     {
         dLs[0] = _dLs;
         steps[0] = _step;

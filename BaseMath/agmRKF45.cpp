@@ -18,7 +18,7 @@
 #define EPS_U26 26.0
 #define REMIN   1e-12
 
-static REALTYPE__ coefs[] = {0.90, 0.81, 0.45, 0.34, 0.22};
+static REALTYPE_A coefs[] = {0.90, 0.81, 0.45, 0.34, 0.22};
 
 static bool b = false;
 

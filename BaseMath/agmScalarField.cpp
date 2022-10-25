@@ -8,11 +8,11 @@
 #define fidx(kx, ky, kz) (((ky) + (kz)*N[1])*N[0] + (kx))
 
 //-----------------------------------------------------------------------
-static void convWindow(int N, REALTYPE__ * v)
+static void convWindow(int N, REALTYPE_A * v)
 {
-    REALTYPE__ m = 0.8;
+    REALTYPE_A m = 0.8;
     int hw = (N - 1) / 2;
-    REALTYPE__ d = log(m) / (hw*hw);
+    REALTYPE_A d = log(m) / (hw*hw);
     for (int k = 0; k < N; k++)
         v[k] = exp(d*(k - hw)*(k - hw));
 }
@@ -20,10 +20,10 @@ static void convWindow(int N, REALTYPE__ * v)
 //-----------------------------------------------------------------------
 uint32_t CagmScalarField::CreateConvWindow()
 {
-    REALTYPE__ *a = new REALTYPE__[N[0]];
+    REALTYPE_A *a = new REALTYPE_A[N[0]];
     convWindow(N[0], a);
     int kx, ky, kz;
-    REALTYPE__ s = 0;
+    REALTYPE_A s = 0;
     for (kz = 0; kz < N[0]; kz++)
         for (ky = 0; ky < N[0]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -44,7 +44,7 @@ uint32_t CagmScalarField::divD(CagmVectorField *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -132,7 +132,7 @@ uint32_t CagmScalarField::invD(void)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarField::multD(REALTYPE__ c, CagmScalarField *a)
+uint32_t CagmScalarField::multD(REALTYPE_A c, CagmScalarField *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
@@ -145,7 +145,7 @@ uint32_t CagmScalarField::multD(REALTYPE__ c, CagmScalarField *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarField::multD(REALTYPE__ c)
+uint32_t CagmScalarField::multD(REALTYPE_A c)
 {
     return multD(c, this);
 }
@@ -229,7 +229,7 @@ uint32_t CagmScalarField::negD()
 //-----------------------------------------------------------------------
 uint32_t CagmScalarField::zeroD()
 {
-    REALTYPE__ wsum = 0;
+    REALTYPE_A wsum = 0;
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)

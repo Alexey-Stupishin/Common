@@ -10,7 +10,7 @@ class CagpWiegelmann
 {
 protected:
     int N[3];
-    REALTYPE__ dircos[3];
+    REALTYPE_A dircos[3];
 
     // sources input
     CagmVectorField *sourceB;
@@ -47,7 +47,7 @@ protected:
 
     size_t queueID;
 
-    REALTYPE__ *Lt;
+    REALTYPE_A *Lt;
 
 protected:
 
@@ -59,9 +59,9 @@ public:
                CagmVectorField *_baseField, CagmVectorField *_baseWeight,
                CagmScalarField *_absField, CagmScalarField *_absWeight, 
                CagmScalarField *_losField, CagmScalarField *_losWeight, 
-               REALTYPE__ *_vcos,
-               CagmVectorFieldOps *_outF, REALTYPE__ *_Lt);
-    virtual uint32_t Allocate(int *M, REALTYPE__ *steps);
+               REALTYPE_A *_vcos,
+               CagmVectorFieldOps *_outF, REALTYPE_A *_Lt);
+    virtual uint32_t Allocate(int *M, REALTYPE_A *steps);
 
     virtual uint32_t setTaskParams(void * params, size_t queueID);
     virtual uint32_t ActionCore();

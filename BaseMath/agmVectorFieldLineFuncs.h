@@ -10,5 +10,5 @@ public:
     double relBoundAchieve;
     CagmVectorFieldOps *vfield;
     int *N;
-    REALTYPE__ **fieldX, **fieldY, **fieldZ;
+    REALTYPE_A **fieldX, **fieldY, **fieldZ;
 };

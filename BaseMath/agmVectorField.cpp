@@ -12,7 +12,7 @@
 #define fidx(kx, ky, kz) (((ky) + (kz)*N[1])*N[0] + (kx))
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorField::getThetaMetrics(REALTYPE__ relBound, int stencil, CagmMetricsLim *m)
+uint32_t CagmVectorField::getThetaMetrics(REALTYPE_A relBound, int stencil, CagmMetricsLim *m)
 {
     int *N = this->GetDimensions();
 
@@ -26,7 +26,7 @@ uint32_t CagmVectorField::getThetaMetrics(REALTYPE__ relBound, int stencil, Cagm
     b->abs(this);
     j->abs(J);
     jxb->abs(JxB);
-    REALTYPE__ ts = 0, tjs = 0, tj = 0;
+    REALTYPE_A ts = 0, tjs = 0, tj = 0;
     int kx, ky, kz;
     int cnt = 0;
     int bx[2]; bx[0] = (int)ceil(N[0]*relBound); bx[1] = (int)floor(N[0]*relBound);
@@ -36,9 +36,9 @@ uint32_t CagmVectorField::getThetaMetrics(REALTYPE__ relBound, int stencil, Cagm
         for (ky = by[0]; ky < N[1]-by[1]; ky++)
             for (kx = bx[0]; kx < N[0]-bx[1]; kx++)
             {
-                REALTYPE__ bv = b->field[(ky)+(kz)*N[1]][(kx)];
-                REALTYPE__ jv = j->field[(ky)+(kz)*N[1]][(kx)];
-                REALTYPE__ jxbv = jxb->field[(ky)+(kz)*N[1]][(kx)];
+                REALTYPE_A bv = b->field[(ky)+(kz)*N[1]][(kx)];
+                REALTYPE_A jv = j->field[(ky)+(kz)*N[1]][(kx)];
+                REALTYPE_A jxbv = jxb->field[(ky)+(kz)*N[1]][(kx)];
 
                 ts  += jxbv/(jv*bv);
                 tjs += jxbv/bv;
@@ -59,7 +59,7 @@ uint32_t CagmVectorField::getThetaMetrics(REALTYPE__ relBound, int stencil, Cagm
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorField::getDifference(CagmVectorField *init, REALTYPE__ relBound, int stencil, 
+uint32_t CagmVectorField::getDifference(CagmVectorField *init, REALTYPE_A relBound, int stencil, 
                                      CagmMetricsLim *mabs, CagmMetricsLim *mcos, CagmMetricsCosLim *mcm)
 {
     int *N = GetDimensions();
@@ -76,7 +76,7 @@ uint32_t CagmVectorField::getDifference(CagmVectorField *init, REALTYPE__ relBou
     CagmScalarField *j = new CagmScalarField(N);
     j->abs(J);
 
-    REALTYPE__ ta = 0, tja = 0, tBa = 0, tc = 0, tjc = 0, tBc = 0, tj = 0, tB = 0;
+    REALTYPE_A ta = 0, tja = 0, tBa = 0, tc = 0, tjc = 0, tBc = 0, tj = 0, tB = 0;
     mcm->mW->c[0] = 1;
     mcm->mW->B4c[0] = 0;
     int kx, ky, kz;
@@ -88,10 +88,10 @@ uint32_t CagmVectorField::getDifference(CagmVectorField *init, REALTYPE__ relBou
         for (ky = by[0]; ky < N[1]-by[1]; ky++)
             for (kx = bx[0]; kx < N[0]-bx[1]; kx++)
             {
-                REALTYPE__ B  = Babs2->field[(ky)+(kz)*N[1]][(kx)];
-                REALTYPE__ dbv = fabs(Babs1->field[(ky)+(kz)*N[1]][(kx)] - B)/B;
-                REALTYPE__ cv = B1B2->field[(ky)+(kz)*N[1]][(kx)]/(Babs1->field[(ky)+(kz)*N[1]][(kx)]*B);
-                REALTYPE__ jv = j->field[(ky)+(kz)*N[1]][(kx)];
+                REALTYPE_A B  = Babs2->field[(ky)+(kz)*N[1]][(kx)];
+                REALTYPE_A dbv = fabs(Babs1->field[(ky)+(kz)*N[1]][(kx)] - B)/B;
+                REALTYPE_A cv = B1B2->field[(ky)+(kz)*N[1]][(kx)]/(Babs1->field[(ky)+(kz)*N[1]][(kx)]*B);
+                REALTYPE_A jv = j->field[(ky)+(kz)*N[1]][(kx)];
 
                 tj  += jv;
                 tB  += B;
@@ -129,7 +129,7 @@ uint32_t CagmVectorField::crossD(CagmVectorField *a, const CagmVectorField *b)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ tx, ty, tz;
+    REALTYPE_A tx, ty, tz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -156,7 +156,7 @@ uint32_t CagmVectorField::rotD(CagmVectorField *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -223,7 +223,7 @@ uint32_t CagmVectorField::gradD(CagmScalarField *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -257,7 +257,7 @@ uint32_t CagmVectorField::gradD(CagmScalarField *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorField::multD(REALTYPE__ c, CagmVectorField *a)
+uint32_t CagmVectorField::multD(REALTYPE_A c, CagmVectorField *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
@@ -274,7 +274,7 @@ uint32_t CagmVectorField::multD(REALTYPE__ c, CagmVectorField *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorField::multD(REALTYPE__ c)
+uint32_t CagmVectorField::multD(REALTYPE_A c)
 {
     return multD(c, this);
 }

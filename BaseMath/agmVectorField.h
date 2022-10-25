@@ -19,7 +19,7 @@ friend class CagmScalarField;
 public:
     static uint32_t GetAllocSize(int *N)
     {
-        return 3*sizeof(REALTYPE__)*N[0]*N[1]*N[2] + sizeof(CagmVectorField) + CagmVectorFieldOps::GetAllocSize(N);
+        return 3*sizeof(REALTYPE_A)*N[0]*N[1]*N[2] + sizeof(CagmVectorField) + CagmVectorFieldOps::GetAllocSize(N);
     }
 
     //uint32_t Get(CagmVectorField& to)
@@ -35,25 +35,25 @@ public:
             for (ky = 0; ky < N[1]; ky++)
                 for (kz = 0; kz < N[2]; kz++)
                 {
-                    memcpy(allocFieldX + (ky + kz*N[1])*N[0], from.allocFieldX + (ky + kz*N[1])*N[0], sizeof(REALTYPE__)*N[0]);
-                    memcpy(allocFieldY + (ky + kz*N[1])*N[0], from.allocFieldY + (ky + kz*N[1])*N[0], sizeof(REALTYPE__)*N[0]);
-                    memcpy(allocFieldZ + (ky + kz*N[1])*N[0], from.allocFieldZ + (ky + kz*N[1])*N[0], sizeof(REALTYPE__)*N[0]);
+                    memcpy(allocFieldX + (ky + kz*N[1])*N[0], from.allocFieldX + (ky + kz*N[1])*N[0], sizeof(REALTYPE_A)*N[0]);
+                    memcpy(allocFieldY + (ky + kz*N[1])*N[0], from.allocFieldY + (ky + kz*N[1])*N[0], sizeof(REALTYPE_A)*N[0]);
+                    memcpy(allocFieldZ + (ky + kz*N[1])*N[0], from.allocFieldZ + (ky + kz*N[1])*N[0], sizeof(REALTYPE_A)*N[0]);
                 }
         }
         else
         {
-            memcpy(allocFieldX, from.allocFieldX, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
-            memcpy(allocFieldY, from.allocFieldY, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
-            memcpy(allocFieldZ, from.allocFieldZ, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
+            memcpy(allocFieldX, from.allocFieldX, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
+            memcpy(allocFieldY, from.allocFieldY, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
+            memcpy(allocFieldZ, from.allocFieldZ, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
         }
 
-        SetSteps((REALTYPE__ *)from.step);
+        SetSteps((REALTYPE_A *)from.step);
 
         return 0;
     }
 
 public:
-    REALTYPE__ *allocFieldX,  *allocFieldY,  *allocFieldZ;
+    REALTYPE_A *allocFieldX,  *allocFieldY,  *allocFieldZ;
 
 protected:
 	bool isRef;
@@ -61,12 +61,12 @@ protected:
 protected:
     uint32_t Alloc()
     {
-        allocFieldX = new REALTYPE__[N[0]*N[1]*N[2]];
-        allocFieldY = new REALTYPE__[N[0]*N[1]*N[2]];
-        allocFieldZ = new REALTYPE__[N[0]*N[1]*N[2]];
-        memset(allocFieldX, 0, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
-        memset(allocFieldY, 0, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
-        memset(allocFieldZ, 0, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
+        allocFieldX = new REALTYPE_A[N[0]*N[1]*N[2]];
+        allocFieldY = new REALTYPE_A[N[0]*N[1]*N[2]];
+        allocFieldZ = new REALTYPE_A[N[0]*N[1]*N[2]];
+        memset(allocFieldX, 0, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
+        memset(allocFieldY, 0, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
+        memset(allocFieldZ, 0, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
 
         int ky, kz;
         for (ky = 0; ky < N[1]; ky++)
@@ -84,19 +84,19 @@ protected:
     {
         data->Copy(allocFieldX, allocFieldY, allocFieldZ);
 
-        REALTYPE__ step[] = {1.0, 1.0, 1.0};
+        REALTYPE_A step[] = {1.0, 1.0, 1.0};
         SetSteps(step);
 
         return 0;
     }
 
-    uint32_t Copy(REALTYPE__ *Bx, REALTYPE__ *By, REALTYPE__ *Bz)
+    uint32_t Copy(REALTYPE_A *Bx, REALTYPE_A *By, REALTYPE_A *Bz)
     {
         CopyComp(Bx, 0);
         CopyComp(By, 1);
         CopyComp(Bz, 2);
 
-        REALTYPE__ step[] = {1.0, 1.0, 1.0};
+        REALTYPE_A step[] = {1.0, 1.0, 1.0};
         SetSteps(step);
 
         return 0;
@@ -137,7 +137,7 @@ public:
             Copy(data);
 		}
 
-	CagmVectorField(int *N, REALTYPE__ *Bx, REALTYPE__ *By, REALTYPE__ *Bz)
+	CagmVectorField(int *N, REALTYPE_A *Bx, REALTYPE_A *By, REALTYPE_A *Bz)
         : CagmVectorFieldOps(N),
           allocFieldX(nullptr),  
           allocFieldY(nullptr),  
@@ -171,7 +171,7 @@ public:
         SetSteps(source->step);
 	}
 
-    CagmVectorField(REALTYPE__ *X, REALTYPE__ *Y, REALTYPE__ *Z, int *M, REALTYPE__ *steps = nullptr)
+    CagmVectorField(REALTYPE_A *X, REALTYPE_A *Y, REALTYPE_A *Z, int *M, REALTYPE_A *steps = nullptr)
         : CagmVectorFieldOps(M),
         allocFieldX(nullptr),
         allocFieldY(nullptr),
@@ -185,7 +185,7 @@ public:
             SetSteps(steps);
         else
         {
-            REALTYPE__ s[] = { 1.0, 1.0, 1.0 };
+            REALTYPE_A s[] = { 1.0, 1.0, 1.0 };
             SetSteps(s);
         }
     }
@@ -204,9 +204,9 @@ public:
         return *this;
     }
 
-    uint32_t CopyComp(REALTYPE__ *Bc, int comp)
+    uint32_t CopyComp(REALTYPE_A *Bc, int comp)
     {
-        REALTYPE__ *c;
+        REALTYPE_A *c;
         if (comp == 0)
             c = allocFieldX;
         else if (comp == 1)
@@ -214,14 +214,14 @@ public:
         else if (comp == 2)
             c = allocFieldZ;
 
-        memcpy(c, Bc, N[0]*N[1]*N[2]*sizeof(REALTYPE__));
+        memcpy(c, Bc, N[0]*N[1]*N[2]*sizeof(REALTYPE_A));
 
         return 0;
     }
 
-    uint32_t GetComp(REALTYPE__ *Bc, int comp)
+    uint32_t GetComp(REALTYPE_A *Bc, int comp)
     {
-        REALTYPE__ *c;
+        REALTYPE_A *c;
         if (comp == 0)
             c = allocFieldX;
         else if (comp == 1)
@@ -229,7 +229,7 @@ public:
         else if (comp == 2)
             c = allocFieldZ;
 
-        memcpy(Bc, c, N[0]*N[1]*N[2]*sizeof(REALTYPE__));
+        memcpy(Bc, c, N[0]*N[1]*N[2]*sizeof(REALTYPE_A));
 
         return 0;
     }
@@ -256,7 +256,7 @@ public:
         Delete();
     }
 
-    uint32_t GetFieldAddress(REALTYPE__ **px, REALTYPE__ **py, REALTYPE__ **pz)
+    uint32_t GetFieldAddress(REALTYPE_A **px, REALTYPE_A **py, REALTYPE_A **pz)
     {
         *px = allocFieldX;
         *py = allocFieldY;
@@ -270,15 +270,15 @@ public:
         return data->Create(N, allocFieldX, allocFieldY, allocFieldZ);
     }
 
-    uint32_t getThetaMetrics(REALTYPE__ relBound, int stencil, CagmMetricsLim * m);
-    uint32_t getDifference(CagmVectorField * init, REALTYPE__ relBound, int stencil, CagmMetricsLim * mabs, CagmMetricsLim * mcos, CagmMetricsCosLim * mcm);
+    uint32_t getThetaMetrics(REALTYPE_A relBound, int stencil, CagmMetricsLim * m);
+    uint32_t getDifference(CagmVectorField * init, REALTYPE_A relBound, int stencil, CagmMetricsLim * mabs, CagmMetricsLim * mcos, CagmMetricsCosLim * mcm);
     
     uint32_t crossD(CagmVectorField *a, const CagmVectorField *b);
     uint32_t crossD(CagmVectorField *a);
     uint32_t rotD(CagmVectorField *a);
     uint32_t gradD(CagmScalarField *a);
-    uint32_t multD(REALTYPE__ c, CagmVectorField *a);
-    uint32_t multD(REALTYPE__ c);
+    uint32_t multD(REALTYPE_A c, CagmVectorField *a);
+    uint32_t multD(REALTYPE_A c);
     uint32_t multD(CagmScalarField *c, CagmVectorField *a);
     uint32_t multD(CagmVectorField *a, CagmScalarField *c);
     uint32_t multD(CagmScalarField *c);

@@ -20,9 +20,9 @@ CbinDataStruct::~CbinDataStruct()
 }
 
 //------------------------------------------------------------------
-uint32_t CbinDataStruct::Copy(REALTYPE__ *f, REALTYPE__ *fy, REALTYPE__ *fz, int idx)
+uint32_t CbinDataStruct::Copy(REALTYPE_A *f, REALTYPE_A *fy, REALTYPE_A *fz, int idx)
 {
-    size_t sz = sizeof(REALTYPE__)*data[idx].N[0]*data[idx].N[1]*data[idx].N[2];
+    size_t sz = sizeof(REALTYPE_A)*data[idx].N[0]*data[idx].N[1]*data[idx].N[2];
 
     memcpy(f, data[idx].data, sz);
     if (fy && fz)
@@ -35,11 +35,11 @@ uint32_t CbinDataStruct::Copy(REALTYPE__ *f, REALTYPE__ *fy, REALTYPE__ *fz, int
 }
 
 //------------------------------------------------------------------
-uint32_t CbinDataStruct::Create(int *N, REALTYPE__ *f, REALTYPE__ *fy, REALTYPE__ *fz)
+uint32_t CbinDataStruct::Create(int *N, REALTYPE_A *f, REALTYPE_A *fy, REALTYPE_A *fz)
 {
     Delete();
 
-    uint64_t sz = sizeof(REALTYPE__)*N[0]*N[1]*N[2];
+    uint64_t sz = sizeof(REALTYPE_A)*N[0]*N[1]*N[2];
 
     for (int k = 0; k < 3; k++)
         if (k == 0 || k > 0 && fy && fz)
@@ -105,7 +105,7 @@ int CbinDataStruct::WriteHeader(FILE * fid)
 }
 
 //------------------------------------------------------------------
-size_t CbinDataStruct::Write(FILE * fid, REALTYPE__ *d, size_t lng, char * name)
+size_t CbinDataStruct::Write(FILE * fid, REALTYPE_A *d, size_t lng, char * name)
 {
     CbinData data;
     strcpy(data.name, name);

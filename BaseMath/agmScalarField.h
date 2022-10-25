@@ -18,11 +18,11 @@ friend class CagmVectorField;
 public:
     static uint32_t GetAllocSize(int *N)
     {
-        return sizeof(REALTYPE__)*N[0]*N[1]*N[2] + sizeof(CagmScalarField) + CagmScalarFieldOps::GetAllocSize(N);
+        return sizeof(REALTYPE_A)*N[0]*N[1]*N[2] + sizeof(CagmScalarField) + CagmScalarFieldOps::GetAllocSize(N);
     }
 
 public:
-    REALTYPE__ *allocField;
+    REALTYPE_A *allocField;
 
 protected:
 	bool isRef;
@@ -30,8 +30,8 @@ protected:
 protected:
     uint32_t Alloc()
     {
-        allocField = new REALTYPE__[N[0]*N[1]*N[2]];
-        memset(allocField, 0, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
+        allocField = new REALTYPE_A[N[0]*N[1]*N[2]];
+        memset(allocField, 0, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
 
         int ky, kz;
         for (ky = 0; ky < N[1]; ky++)
@@ -48,12 +48,12 @@ protected:
             int ky, kz;
             for (kz = 0; kz < N[2]; kz++)
                 for (ky = 0; ky < N[1]; ky++)
-                    memcpy(allocField + (ky + kz*N[1])*N[0], from.allocField + (ky + kz*N[1])*N[0], sizeof(REALTYPE__)*N[0]);
+                    memcpy(allocField + (ky + kz*N[1])*N[0], from.allocField + (ky + kz*N[1])*N[0], sizeof(REALTYPE_A)*N[0]);
         }
         else
-            memcpy(allocField, from.allocField, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
+            memcpy(allocField, from.allocField, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
 
-        SetSteps((REALTYPE__ *)from.step);
+        SetSteps((REALTYPE_A *)from.step);
 
         return 0;
     }
@@ -62,17 +62,17 @@ protected:
     {
         data->Copy(allocField, nullptr, nullptr, idx);
 
-        REALTYPE__ step[] = {1.0, 1.0, 1.0};
+        REALTYPE_A step[] = {1.0, 1.0, 1.0};
         SetSteps(step);
 
         return 0;
     }
 
-    uint32_t Copy(REALTYPE__ *S) // use carefully!
+    uint32_t Copy(REALTYPE_A *S) // use carefully!
     {
-        memcpy(allocField, S, sizeof(REALTYPE__)*N[0]*N[1]*N[2]);
+        memcpy(allocField, S, sizeof(REALTYPE_A)*N[0]*N[1]*N[2]);
 
-        REALTYPE__ step[] = {1.0, 1.0, 1.0};
+        REALTYPE_A step[] = {1.0, 1.0, 1.0};
         SetSteps(step);
 
         return 0;
@@ -105,7 +105,7 @@ public:
             Copy(data, idx);
 		}
 
-	CagmScalarField(int *N, REALTYPE__ *S)
+	CagmScalarField(int *N, REALTYPE_A *S)
         : CagmScalarFieldOps(N),
           allocField(nullptr)  
         {
@@ -148,9 +148,9 @@ public:
 
     uint32_t CreateConvWindow();
 
-    uint32_t setField(REALTYPE__ *Bc)
+    uint32_t setField(REALTYPE_A *Bc)
     {
-        memcpy(allocField, Bc, N[0]*N[1]*N[2]*sizeof(REALTYPE__));
+        memcpy(allocField, Bc, N[0]*N[1]*N[2]*sizeof(REALTYPE_A));
 
         return 0;
     }
@@ -188,45 +188,45 @@ public:
         Delete();
     }
 
-    uint32_t GetFieldAddress(REALTYPE__ **p)
+    uint32_t GetFieldAddress(REALTYPE_A **p)
     {
         *p = allocField;
 
         return 0;
     }
 
-    uint32_t Weight(int type, REALTYPE__ bound, int *xb, int *yb, int *zb)
+    uint32_t Weight(int type, REALTYPE_A bound, int *xb, int *yb, int *zb)
     {
         int kx, ky, kz;
-        REALTYPE__ *wx = new REALTYPE__[N[0]];
-        REALTYPE__ *wy = new REALTYPE__[N[1]];
-        REALTYPE__ *wz = new REALTYPE__[N[2]];
+        REALTYPE_A *wx = new REALTYPE_A[N[0]];
+        REALTYPE_A *wy = new REALTYPE_A[N[1]];
+        REALTYPE_A *wz = new REALTYPE_A[N[2]];
 
-        REALTYPE__ zD = N[2]*bound;
+        REALTYPE_A zD = N[2]*bound;
         zb[0] = 0; zb[1] = 0;
         for (kz = 0; kz < N[2]; kz++)
         {
             if (type == SWF_COS && kz > N[2]-zD-1)
-                wz[kz] = cos(__pi_c*0.5*(kz-N[2]+zD+1)/zD);
+                wz[kz] = cos(v_pi_c*0.5*(kz-N[2]+zD+1)/zD);
             else
             {
-                wz[kz] = __1;
+                wz[kz] = v_1;
                 if (kz > zb[1])
                     zb[1] = kz;
             }
         }
 
-        REALTYPE__ yD = N[1]*bound;
+        REALTYPE_A yD = N[1]*bound;
         yb[0] = N[1]; yb[1] = 0;
         for (ky = 0; ky < N[1]; ky++)
         {
             if (type == SWF_COS && ky > N[1]-yD-1)
-                wy[ky] = cos(__pi_c*0.5*(ky-N[1]+1+yD)/yD);
+                wy[ky] = cos(v_pi_c*0.5*(ky-N[1]+1+yD)/yD);
             else if (type == SWF_COS && ky < yD)
-                wy[ky] = cos(__pi_c*0.5*(__1 - ky/yD));
+                wy[ky] = cos(v_pi_c*0.5*(v_1 - ky/yD));
             else
             {
-                wy[ky] = __1;
+                wy[ky] = v_1;
                 if (ky < yb[0])
                     yb[0] = ky;
                 if (ky > yb[1])
@@ -234,17 +234,17 @@ public:
             }
         }
 
-        REALTYPE__ xD = N[0]*bound;
+        REALTYPE_A xD = N[0]*bound;
         xb[0] = N[0]; xb[1] = 0;
         for (kx = 0; kx < N[0]; kx++)
         {
             if (type == SWF_COS && kx > N[0]-xD-1)
-                wx[kx] = cos(__pi_c*0.5*(kx-N[0]+1+xD)/xD);
+                wx[kx] = cos(v_pi_c*0.5*(kx-N[0]+1+xD)/xD);
             else if (type == SWF_COS && kx < xD)
-                wx[kx] = cos(__pi_c*0.5*(__1 - kx/xD));
+                wx[kx] = cos(v_pi_c*0.5*(v_1 - kx/xD));
             else
             {
-                wx[kx] = __1;
+                wx[kx] = v_1;
                 if (kx < xb[0])
                     xb[0] = kx;
                 if (kx > xb[1])
@@ -270,8 +270,8 @@ public:
     uint32_t absD(CagmVectorField *a);
     uint32_t invD(CagmScalarField *a);
     uint32_t invD(void);
-    uint32_t multD(REALTYPE__ c, CagmScalarField *a);
-    uint32_t multD(REALTYPE__ c);
+    uint32_t multD(REALTYPE_A c, CagmScalarField *a);
+    uint32_t multD(REALTYPE_A c);
     uint32_t multD(CagmScalarField *c, CagmScalarField *a);
     uint32_t multD(CagmScalarField *c);
     uint32_t addD(CagmScalarField *a, CagmScalarField *b);

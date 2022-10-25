@@ -18,7 +18,7 @@ CagmScalarFieldOps::CagmScalarFieldOps(int *_N, int *_DphysL, int *_DphysH)
 //-----------------------------------------------------------------------
 CagmScalarFieldOps::CagmScalarFieldOps(const CagmScalarFieldOps& from)
 {
-    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE__ *)from.step);
+    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE_A *)from.step);
 }
 
 //-----------------------------------------------------------------------
@@ -34,7 +34,7 @@ CagmScalarFieldOps& CagmScalarFieldOps::operator=(const CagmScalarFieldOps& from
         return *this;
 
     Delete();
-    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE__ *)from.step);
+    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE_A *)from.step);
 
     return *this;
 }
@@ -48,10 +48,10 @@ uint32_t CagmScalarFieldOps::Delete()
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::Initialize(int *_N, int *_NphysL, int *_NphysH, REALTYPE__ *_step)
+uint32_t CagmScalarFieldOps::Initialize(int *_N, int *_NphysL, int *_NphysH, REALTYPE_A *_step)
 {
     N[0] = _N[0]; N[1] = _N[1]; N[2] = _N[2];
-    field = new REALTYPE__ * [N[1]*N[2]];
+    field = new REALTYPE_A * [N[1]*N[2]];
 
     setNPhys(_NphysL, _NphysH);
 
@@ -106,13 +106,13 @@ uint32_t CagmScalarFieldOps::setNPhys(int *_NphysL, int *_NphysH)
 }
 
 ////-----------------------------------------------------------------------
-//REALTYPE__ CagmScalarFieldOps::getElement(int kx, int ky, int kz)
+//REALTYPE_A CagmScalarFieldOps::getElement(int kx, int ky, int kz)
 //{
 //    return field[fidx(kx, ky, kz)];
 //}
 
 //-----------------------------------------------------------------------
-REALTYPE__ *CagmScalarFieldOps::getAddress(int kx, int ky, int kz)
+REALTYPE_A *CagmScalarFieldOps::getAddress(int kx, int ky, int kz)
 {
     return &field[fidx(kx, ky, kz)];
 }
@@ -131,7 +131,7 @@ uint32_t CagmScalarFieldOps::SetMargins(CagmScalarFieldOps *source, int *Mmin, i
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::SetSteps(REALTYPE__ *_step)
+uint32_t CagmScalarFieldOps::SetSteps(REALTYPE_A *_step)
 {
     step[0] = _step[0];
     step[1] = _step[1];
@@ -141,7 +141,7 @@ uint32_t CagmScalarFieldOps::SetSteps(REALTYPE__ *_step)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ * CagmScalarFieldOps::GetSteps()
+REALTYPE_A * CagmScalarFieldOps::GetSteps()
 {
     return step;
 }
@@ -161,9 +161,9 @@ REALTYPE__ * CagmScalarFieldOps::GetSteps()
 //}
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::derivative(int kx, int ky, int kz, int dir)
+REALTYPE_A CagmScalarFieldOps::derivative(int kx, int ky, int kz, int dir)
 {
-    REALTYPE__ d;
+    REALTYPE_A d;
     if (dir == 0)
     {
         if (kx == 0)
@@ -203,7 +203,7 @@ uint32_t CagmScalarFieldOps::div(CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -241,7 +241,7 @@ uint32_t CagmScalarFieldOps::div31(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -279,7 +279,7 @@ uint32_t CagmScalarFieldOps::div42(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -319,7 +319,7 @@ uint32_t CagmScalarFieldOps::div41(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -359,7 +359,7 @@ uint32_t CagmScalarFieldOps::div5(CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -417,7 +417,7 @@ uint32_t CagmScalarFieldOps::divScheme(CagmVectorFieldOps *a, int scheme)
 uint32_t CagmScalarFieldOps::dot(CagmVectorFieldOps *a, CagmVectorFieldOps *b, CagmVectorFieldOps *Weight)
 {
 	// check equiv. sizes!
-    REALTYPE__ w = 1;
+    REALTYPE_A w = 1;
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
@@ -469,7 +469,7 @@ uint32_t CagmScalarFieldOps::abs(CagmVectorFieldOps *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::projection(CagmVectorFieldOps *a, REALTYPE__ *d)
+uint32_t CagmScalarFieldOps::projection(CagmVectorFieldOps *a, REALTYPE_A *d)
 {
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
@@ -505,7 +505,7 @@ uint32_t CagmScalarFieldOps::inv(void)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::mult(REALTYPE__ c, CagmScalarFieldOps *a)
+uint32_t CagmScalarFieldOps::mult(REALTYPE_A c, CagmScalarFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
@@ -518,7 +518,7 @@ uint32_t CagmScalarFieldOps::mult(REALTYPE__ c, CagmScalarFieldOps *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::mult(REALTYPE__ c)
+uint32_t CagmScalarFieldOps::mult(REALTYPE_A c)
 {
     return mult(c, this);
 }
@@ -657,7 +657,7 @@ uint32_t CagmScalarFieldOps::zeroZ0()
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::setZlevel(int level, REALTYPE__ w)
+uint32_t CagmScalarFieldOps::setZlevel(int level, REALTYPE_A w)
 {
 	int kx, ky;
     for (ky = 0; ky < N[1]; ky++)
@@ -694,7 +694,7 @@ uint32_t CagmScalarFieldOps::setPlane(CagmScalarFieldOps *plane, int wplane, int
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::LOS(CagmVectorFieldOps *a, REALTYPE__ *dircos)
+uint32_t CagmScalarFieldOps::LOS(CagmVectorFieldOps *a, REALTYPE_A *dircos)
 {
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
@@ -709,9 +709,9 @@ uint32_t CagmScalarFieldOps::LOS(CagmVectorFieldOps *a, REALTYPE__ *dircos)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::rotate2D(CagmScalarFieldOps *ac, CagmScalarFieldOps *as, CagmScalarFieldOps *acn, CagmScalarFieldOps *asn, REALTYPE__ cosz)
+uint32_t CagmScalarFieldOps::rotate2D(CagmScalarFieldOps *ac, CagmScalarFieldOps *as, CagmScalarFieldOps *acn, CagmScalarFieldOps *asn, REALTYPE_A cosz)
 {
-    REALTYPE__ sinz = sqrt(1-cosz*cosz);
+    REALTYPE_A sinz = sqrt(1-cosz*cosz);
 	int kx, ky, kz;
     int *N = ac->GetDimensions();
     for (kz = 0; kz < N[2]; kz++)
@@ -754,9 +754,9 @@ uint32_t CagmScalarFieldOps::relax(CagmScalarFieldOps *cond, CagmScalarFieldOps 
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::sum(CagmScalarFieldOps *weight)
+REALTYPE_A CagmScalarFieldOps::sum(CagmScalarFieldOps *weight)
 {
-    REALTYPE__ wsum = 0;
+    REALTYPE_A wsum = 0;
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
@@ -772,9 +772,9 @@ REALTYPE__ CagmScalarFieldOps::sum(CagmScalarFieldOps *weight)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::sumPhys(CagmScalarFieldOps *weight)
+REALTYPE_A CagmScalarFieldOps::sumPhys(CagmScalarFieldOps *weight)
 {
-    REALTYPE__ wsum = 0;
+    REALTYPE_A wsum = 0;
 	int kx, ky, kz;
     for (kz = NphysL[2]; kz < NphysH[2]; kz++)
         for (ky = NphysL[1]; ky < NphysH[1]; ky++)
@@ -790,9 +790,9 @@ REALTYPE__ CagmScalarFieldOps::sumPhys(CagmScalarFieldOps *weight)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::sumPhysW(CagmScalarFieldOps *weight)
+REALTYPE_A CagmScalarFieldOps::sumPhysW(CagmScalarFieldOps *weight)
 {
-    REALTYPE__ wsum = 0;
+    REALTYPE_A wsum = 0;
 	int kx, ky, kz;
     for (kz = weight->NphysL[2]; kz < weight->NphysH[2]; kz++)
         for (ky = weight->NphysL[1]; ky < weight->NphysH[1]; ky++)
@@ -803,15 +803,15 @@ REALTYPE__ CagmScalarFieldOps::sumPhysW(CagmScalarFieldOps *weight)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::power(REALTYPE__ pw)
+uint32_t CagmScalarFieldOps::power(REALTYPE_A pw)
 {
     return power(this, pw);
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmScalarFieldOps::power(CagmScalarFieldOps *a, REALTYPE__ pw)
+uint32_t CagmScalarFieldOps::power(CagmScalarFieldOps *a, REALTYPE_A pw)
 {
-    REALTYPE__ wsum = 0;
+    REALTYPE_A wsum = 0;
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
@@ -822,15 +822,15 @@ uint32_t CagmScalarFieldOps::power(CagmScalarFieldOps *a, REALTYPE__ pw)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::avPhys(CagmScalarFieldOps *weight)
+REALTYPE_A CagmScalarFieldOps::avPhys(CagmScalarFieldOps *weight)
 {
     return sumPhys(weight)/((NphysH[0]-NphysL[0]+1)*(NphysH[1]-NphysL[1]+1)*(NphysH[2]-NphysL[2]+1));
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ CagmScalarFieldOps::maxval(void)
+REALTYPE_A CagmScalarFieldOps::maxval(void)
 {
-    REALTYPE__ wmax = 0;
+    REALTYPE_A wmax = 0;
 	int kx, ky, kz;
     for (kz = NphysL[2]; kz < NphysH[2]; kz++)
         for (ky = NphysL[1]; ky < NphysH[1]; ky++)
@@ -862,7 +862,7 @@ uint32_t CagmScalarFieldOps::limWeight(int limType, CagmScalarFieldOps *calc, Ca
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 /*
-void CagmScalarFieldOps::indices(int p, int Np, int q, int Nq, int *p1, int *p2, REALTYPE__ *pf, int *q1, int *q2, REALTYPE__ *qf)
+void CagmScalarFieldOps::indices(int p, int Np, int q, int Nq, int *p1, int *p2, REALTYPE_A *pf, int *q1, int *q2, REALTYPE_A *qf)
 {
     *p1 = p-1; *p2 = p+1; *pf = 0.5;
     *q1 = q-1; *q2 = q+1; *qf = 0.5;
@@ -880,7 +880,7 @@ void CagmScalarFieldOps::indices(int p, int Np, int q, int Nq, int *p1, int *p2,
 // div
 /*
     int p1, p2, q1, q2;
-    REALTYPE__ pf, qf;
+    REALTYPE_A pf, qf;
 	kx = 0;
 	for (ky = 0; ky < N[1]; ky++)
 		for (kz = 0; kz < N[2]; kz++)

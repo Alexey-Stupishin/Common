@@ -8,7 +8,7 @@
 
 #define fidx(kx, ky, kz) (ky)+(kz)*N[1]][(kx)
 
-static void __copyCoord(REALTYPE__ *coord, CagmRKF45Vect *rkfv)
+static void v_copyCoord(REALTYPE_A *coord, CagmRKF45Vect *rkfv)
 {
     coord[0] = (*rkfv)[0];
     coord[1] = (*rkfv)[1];
@@ -16,15 +16,15 @@ static void __copyCoord(REALTYPE__ *coord, CagmRKF45Vect *rkfv)
 }
 
 //-----------------------------------------------------------------------
-CagmVectorFieldOps::Status CagmVectorFieldOps::getOneLine(CagmRKF45 *rkf45, CagmRKF45Vect *rkfv, REALTYPE__ step, REALTYPE__ *coord, int maxlen, int *length, CagmRKF45::Status *status, bool noDuplicate)
+CagmVectorFieldOps::Status CagmVectorFieldOps::getOneLine(CagmRKF45 *rkf45, CagmRKF45Vect *rkfv, REALTYPE_A step, REALTYPE_A *coord, int maxlen, int *length, CagmRKF45::Status *status, bool noDuplicate)
 {
     *length = 0;
     CagmVectorFieldOps::Status outstatus = CagmVectorFieldOps::Status::None;
-    REALTYPE__ t = 0;
-    REALTYPE__ s = step;
+    REALTYPE_A t = 0;
+    REALTYPE_A s = step;
     if (!noDuplicate)
     {
-        __copyCoord(coord, rkfv);
+        v_copyCoord(coord, rkfv);
         (*length)++;
     }
     for (int i = 1; i < maxlen; i++)
@@ -38,7 +38,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneLine(CagmRKF45 *rkf45, Cagm
         *status = rkf45->calculate(t, *rkfv, t + s, false);
         if (*status == CagmRKF45::Status::End || *status == CagmRKF45::Status::EndByCond)
         {
-            __copyCoord(coord+3*(*length), rkfv);
+            v_copyCoord(coord+3*(*length), rkfv);
             (*length)++;
         }
 
@@ -54,8 +54,8 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneLine(CagmRKF45 *rkf45, Cagm
 }
 
 //-----------------------------------------------------------------------
-CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, REALTYPE__ *start, int direction, REALTYPE__ step, REALTYPE__ boundAchieve, REALTYPE__ boundAchieveBottom, 
-    int maxLength, int *length, REALTYPE__ *coord, int *code)
+CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, REALTYPE_A *start, int direction, REALTYPE_A step, REALTYPE_A boundAchieve, REALTYPE_A boundAchieveBottom, 
+    int maxLength, int *length, REALTYPE_A *coord, int *code)
 {
     step = fabs(step);
     int dirc = (direction >= 0 ? 1 : -1);
@@ -66,7 +66,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
     *length = 0;
     *code = 0;
 
-    REALTYPE__ B0[3];
+    REALTYPE_A B0[3];
     uint32_t rc = getPoint(start, B0);
     if (rc != 0)
     {
@@ -103,7 +103,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
         {
             for (int krev = 0; krev < currlen/2; krev++)
             {
-                REALTYPE__ tmp = coord[krev*3];   coord[krev*3]   = coord[(currlen-1-krev)*3];   coord[(currlen-1-krev)*3]   = tmp;
+                REALTYPE_A tmp = coord[krev*3];   coord[krev*3]   = coord[(currlen-1-krev)*3];   coord[(currlen-1-krev)*3]   = tmp;
                            tmp = coord[krev*3+1]; coord[krev*3+1] = coord[(currlen-1-krev)*3+1]; coord[(currlen-1-krev)*3+1] = tmp;
                            tmp = coord[krev*3+2]; coord[krev*3+2] = coord[(currlen-1-krev)*3+2]; coord[(currlen-1-krev)*3+2] = tmp;
             }
@@ -114,7 +114,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
         currlen = 0;
 
     int rest = maxLength - currlen;
-    REALTYPE__ *posc = coord + currlen*3;
+    REALTYPE_A *posc = coord + currlen*3;
     *length += currlen;
     *code = (int)status*100 + (int)rkfstatus;
 
@@ -138,24 +138,24 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 }
 
 ////-----------------------------------------------------------------------
-//CagmVectorFieldOps::Status CagmVectorFieldOps::getMultiLines(CagmRKF45 *rkf45, REALTYPE__ *start, int ninpt, int direction, REALTYPE__ step, REALTYPE__ tolerance, REALTYPE__ boundAchieve, 
-//    int maxResult, int *length, REALTYPE__ *coord, int *codes)
+//CagmVectorFieldOps::Status CagmVectorFieldOps::getMultiLines(CagmRKF45 *rkf45, REALTYPE_A *start, int ninpt, int direction, REALTYPE_A step, REALTYPE_A tolerance, REALTYPE_A boundAchieve, 
+//    int maxResult, int *length, REALTYPE_A *coord, int *codes)
 //{
 //}
 
 ////-----------------------------------------------------------------------
-//CagmVectorFieldOps::Status CagmVectorFieldOps::getLine(REALTYPE__ *start, int ninpt, int direction, REALTYPE__ step, REALTYPE__ tolerance, REALTYPE__ boundAchieve, 
-//    int maxResult, int *length, REALTYPE__ *coord, int *codes)
+//CagmVectorFieldOps::Status CagmVectorFieldOps::getLine(REALTYPE_A *start, int ninpt, int direction, REALTYPE_A step, REALTYPE_A tolerance, REALTYPE_A boundAchieve, 
+//    int maxResult, int *length, REALTYPE_A *coord, int *codes)
 //{
-//    REALTYPE__ c0[3], B0[3];
+//    REALTYPE_A c0[3], B0[3];
 //
 //    T_Lines data;
 //    data.vfield = this;
 //    data.absTol = boundAchieve;
 //    data.relTol = 0;
 //
-//    REALTYPE__ relErr = tolerance;
-//    REALTYPE__ absErr = 0;
+//    REALTYPE_A relErr = tolerance;
+//    REALTYPE_A absErr = 0;
 //    CagmRKF45 *rkf45 = new CagmRKF45(absErr, relErr, fdata, 3, &data, fcond, boundAchieve);
 //    step = fabs(step);
 //    int dirc = (direction >= 0 ? 1 : -1);
@@ -163,7 +163,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 //
 //    CagmVectorFieldOps::Status status;
 //
-//    REALTYPE__ *posc = coord;
+//    REALTYPE_A *posc = coord;
 //    int rest = maxResult;
 //    int k;
 //    for (k = 0; k < ninpt; k++)
@@ -173,7 +173,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 //    }
 //    for (k = 0; k < ninpt; k++)
 //    {
-//        REALTYPE__ *vc = start + 3*k;
+//        REALTYPE_A *vc = start + 3*k;
 //        rkfv = vc;
 //        uint32_t rc = getPoint(vc, B0);
 //        if (rc != 0)
@@ -196,7 +196,7 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 //            {
 //                for (int krev = 0; krev < currlen/2; krev++)
 //                {
-//                    REALTYPE__ tmp = posc[krev*3]; posc[krev*3] = posc[(currlen-1-krev)*3]; posc[(currlen-1-krev)*3] = tmp;
+//                    REALTYPE_A tmp = posc[krev*3]; posc[krev*3] = posc[(currlen-1-krev)*3]; posc[(currlen-1-krev)*3] = tmp;
 //                    tmp = posc[krev*3+1]; posc[krev*3+1] = posc[(currlen-1-krev)*3+1]; posc[(currlen-1-krev)*3+1] = tmp;
 //                    tmp = posc[krev*3+2]; posc[krev*3+2] = posc[(currlen-1-krev)*3+2]; posc[(currlen-1-krev)*3+2] = tmp;
 //                }
@@ -248,20 +248,20 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 //}
 //
 ////-----------------------------------------------------------------------
-//CagmVectorFieldOps::Status CagmVectorFieldOps::getLine1(REALTYPE__ *start, int direction, int maxLength, REALTYPE__ step, REALTYPE__ tolerance, REALTYPE__ boundAchieve, 
-//    int& length, REALTYPE__ *coord, REALTYPE__ *steps)
+//CagmVectorFieldOps::Status CagmVectorFieldOps::getLine1(REALTYPE_A *start, int direction, int maxLength, REALTYPE_A step, REALTYPE_A tolerance, REALTYPE_A boundAchieve, 
+//    int& length, REALTYPE_A *coord, REALTYPE_A *steps)
 //{
 //    length = 0;
-//    REALTYPE__ c0[3], v0[3];
+//    REALTYPE_A c0[3], v0[3];
 //    uint32_t rc = getPoint(start, v0);
 //    if (rc != 0)
 //        return CagmVectorFieldOps::Status::OutOfCube;
 //
 //    step = fabs(step);
-//    REALTYPE__ dir = (direction < 0 ? -1 : 1);
+//    REALTYPE_A dir = (direction < 0 ? -1 : 1);
 //    if (direction == 0)
 //    {
-//        REALTYPE__ norm = 1 / sqrt(v0[0]*v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
+//        REALTYPE_A norm = 1 / sqrt(v0[0]*v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
 //        c0[0] = start[0] + v0[0] * norm*step;
 //        c0[1] = start[1] + v0[1] * norm*step;
 //        c0[2] = start[2] + v0[2] * norm*step;
@@ -275,13 +275,13 @@ CagmVectorFieldOps::Status CagmVectorFieldOps::getOneFullLine(CagmRKF45 *rkf45, 
 //    data.relTol = 0;
 //    data.dir = dir;
 //
-//    REALTYPE__ relErr = tolerance;
-//    REALTYPE__ absErr = 0;
+//    REALTYPE_A relErr = tolerance;
+//    REALTYPE_A absErr = 0;
 //    CagmRKF45 *rkf45 = new CagmRKF45(absErr, relErr, fdata, 3, &data, fcond, boundAchieve);
 //
 //    CagmVectorFieldOps::Status outstatus = CagmVectorFieldOps::Status::None;
-//    REALTYPE__ t = 0;
-//    REALTYPE__ s = step;
+//    REALTYPE_A t = 0;
+//    REALTYPE_A s = step;
 //    coord[0] = v[0];
 //    coord[1] = v[1];
 //    coord[2] = v[2];

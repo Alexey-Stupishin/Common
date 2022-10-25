@@ -4,6 +4,6 @@
 #include <cstring>
 #include <cstdio>
 
-#ifndef REALTYPE__
-#define REALTYPE__ double
+#ifndef REALTYPE_A
+#define REALTYPE_A double
 #endif

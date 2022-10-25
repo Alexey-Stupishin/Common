@@ -45,14 +45,14 @@ public:
     virtual ~CbinDataStruct();
 
 public:
-    uint32_t Create(int *N, REALTYPE__ *f, REALTYPE__ *fy = nullptr, REALTYPE__ *fz = nullptr);
-    uint32_t Copy(REALTYPE__ *f, REALTYPE__ *fy = nullptr, REALTYPE__ *fz = nullptr, int idx = 0);
+    uint32_t Create(int *N, REALTYPE_A *f, REALTYPE_A *fy = nullptr, REALTYPE_A *fz = nullptr);
+    uint32_t Copy(REALTYPE_A *f, REALTYPE_A *fy = nullptr, REALTYPE_A *fz = nullptr, int idx = 0);
     uint32_t Delete();
     int Write(FILE *fid);
 
     static int WriteHeader(FILE *fid);
     static size_t Write(FILE *fid, CbinData *);
-    static size_t Write(FILE *fid, REALTYPE__ *, size_t, char *);
+    static size_t Write(FILE *fid, REALTYPE_A *, size_t, char *);
     static size_t Write(FILE *fid, int *, size_t, char *);
     static size_t Write64(FILE *fid, int64_t *, size_t, char *);
     static int WriteFooter(FILE *fid);

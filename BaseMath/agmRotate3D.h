@@ -5,20 +5,20 @@
 class CagmRotate3D
 {
 public:
-    REALTYPE__ vcos[3];
-    REALTYPE__ lat, lon;
+    REALTYPE_A vcos[3];
+    REALTYPE_A lat, lon;
 
 protected:
-    REALTYPE__ VCS2VAR[3][3], VAR2VCS[3][3];
-    REALTYPE__ sinlat, sinlon, coslat, coslon;
-    REALTYPE__ eyeTol;
+    REALTYPE_A VCS2VAR[3][3], VAR2VCS[3][3];
+    REALTYPE_A sinlat, sinlon, coslat, coslon;
+    REALTYPE_A eyeTol;
 
 public:
-	CagmRotate3D(REALTYPE__ *_vcos, REALTYPE__ _eyeTol = 1e-6)
+	CagmRotate3D(REALTYPE_A *_vcos, REALTYPE_A _eyeTol = 1e-6)
     {
         init(_vcos, _eyeTol);
     }
-	CagmRotate3D(REALTYPE__ _lon, REALTYPE__ _lat, REALTYPE__ _eyeTol = 1e-6)
+	CagmRotate3D(REALTYPE_A _lon, REALTYPE_A _lat, REALTYPE_A _eyeTol = 1e-6)
     {
         init(_lon, _lat, _eyeTol);
     }
@@ -30,12 +30,12 @@ public:
 
     void copyRotator(CagmRotate3D *rotator)
     {
-        memcpy(vcos, rotator->vcos, 3*sizeof(REALTYPE__));
+        memcpy(vcos, rotator->vcos, 3*sizeof(REALTYPE_A));
         lat = rotator->lat;
         lon = rotator->lon;
 
-        memcpy(VCS2VAR, rotator->VCS2VAR, 9 * sizeof(REALTYPE__));
-        memcpy(VAR2VCS, rotator->VAR2VCS, 9 * sizeof(REALTYPE__));
+        memcpy(VCS2VAR, rotator->VCS2VAR, 9 * sizeof(REALTYPE_A));
+        memcpy(VAR2VCS, rotator->VAR2VCS, 9 * sizeof(REALTYPE_A));
         sinlat = rotator->sinlat;
         sinlon = rotator->sinlon;
         coslat = rotator->coslat;
@@ -43,7 +43,7 @@ public:
         eyeTol = rotator->eyeTol;
     }
 
-	virtual void init(REALTYPE__ *_vcos, REALTYPE__ _eyeTol = 1e-6)
+	virtual void init(REALTYPE_A *_vcos, REALTYPE_A _eyeTol = 1e-6)
     {
         eyeTol = _eyeTol;
 
@@ -55,12 +55,12 @@ public:
         coslat = vcos[2]/coslon;
         sinlat = -vcos[0]/coslon;
 
-        lat = asin(sinlat)*__180/__pi_c;
-        lon = asin(sinlon)*__180/__pi_c;
+        lat = asin(sinlat)*v_180/v_pi_c;
+        lon = asin(sinlon)*v_180/v_pi_c;
 
         createMatrices();
     }
-	virtual void init(REALTYPE__ _lon, REALTYPE__ _lat, REALTYPE__ _eyeTol = 1e-6)
+	virtual void init(REALTYPE_A _lon, REALTYPE_A _lat, REALTYPE_A _eyeTol = 1e-6)
     {
         eyeTol = _eyeTol;
 
@@ -72,13 +72,13 @@ public:
         createMatrices();
     }
 
-    static void getDirCos(REALTYPE__ _lon, REALTYPE__ _lat, REALTYPE__ *_vcos
-                        , REALTYPE__ *_sinlon = nullptr, REALTYPE__ *_coslon = nullptr, REALTYPE__ *_sinlat = nullptr, REALTYPE__ *_coslat = nullptr)
+    static void getDirCos(REALTYPE_A _lon, REALTYPE_A _lat, REALTYPE_A *_vcos
+                        , REALTYPE_A *_sinlon = nullptr, REALTYPE_A *_coslon = nullptr, REALTYPE_A *_sinlat = nullptr, REALTYPE_A *_coslat = nullptr)
     {
-        REALTYPE__ sinlon = sin(_lon*__pi_c / __180);
-        REALTYPE__ coslon = cos(_lon*__pi_c / __180);
-        REALTYPE__ sinlat = sin(_lat*__pi_c / __180);
-        REALTYPE__ coslat = cos(_lat*__pi_c / __180);
+        REALTYPE_A sinlon = sin(_lon*v_pi_c / v_180);
+        REALTYPE_A coslon = cos(_lon*v_pi_c / v_180);
+        REALTYPE_A sinlat = sin(_lat*v_pi_c / v_180);
+        REALTYPE_A coslat = cos(_lat*v_pi_c / v_180);
         if (_sinlon)
             *_sinlon = sinlon;
         if (_coslon)
@@ -98,7 +98,7 @@ public:
         return fabs(vcos[0]) < eyeTol && fabs(vcos[1]) < eyeTol && fabs(1 - vcos[2]) < eyeTol;
     }
 
-    void rotate(REALTYPE__ *v, REALTYPE__ *vr, bool direction)
+    void rotate(REALTYPE_A *v, REALTYPE_A *vr, bool direction)
     {
         if (direction)
             rotateP2V(v, vr);
@@ -106,7 +106,7 @@ public:
             rotateV2P(v, vr);
     }
 
-    void rotate(REALTYPE__ x, REALTYPE__ y, REALTYPE__ z, REALTYPE__ *xr, REALTYPE__ *yr, REALTYPE__ *zr, bool direction)
+    void rotate(REALTYPE_A x, REALTYPE_A y, REALTYPE_A z, REALTYPE_A *xr, REALTYPE_A *yr, REALTYPE_A *zr, bool direction)
     {
         if (direction)
             rotateP2V(x, y, z, xr, yr, zr);
@@ -114,31 +114,31 @@ public:
             rotateV2P(x, y, z, xr, yr, zr);
     }
 
-    void rotateP2V(REALTYPE__ x, REALTYPE__ y, REALTYPE__ z, REALTYPE__ *xr, REALTYPE__ *yr, REALTYPE__ *zr)
+    void rotateP2V(REALTYPE_A x, REALTYPE_A y, REALTYPE_A z, REALTYPE_A *xr, REALTYPE_A *yr, REALTYPE_A *zr)
     {
-        REALTYPE__ xt = VAR2VCS[0][0] * x + VAR2VCS[0][1] * y + VAR2VCS[0][2] * z;
-        REALTYPE__ yt = VAR2VCS[1][0] * x + VAR2VCS[1][1] * y + VAR2VCS[1][2] * z;
-        REALTYPE__ zt = VAR2VCS[2][0] * x + VAR2VCS[2][1] * y + VAR2VCS[2][2] * z;
+        REALTYPE_A xt = VAR2VCS[0][0] * x + VAR2VCS[0][1] * y + VAR2VCS[0][2] * z;
+        REALTYPE_A yt = VAR2VCS[1][0] * x + VAR2VCS[1][1] * y + VAR2VCS[1][2] * z;
+        REALTYPE_A zt = VAR2VCS[2][0] * x + VAR2VCS[2][1] * y + VAR2VCS[2][2] * z;
         *xr = xt;
         *yr = yt;
         *zr = zt;
     }
-    void rotateP2V(REALTYPE__ *v, REALTYPE__ *vr)
+    void rotateP2V(REALTYPE_A *v, REALTYPE_A *vr)
     {
         rotateP2V(v[0], v[1], v[2], vr, vr + 1, vr + 2);
     }
-    void rotateP2V(REALTYPE__ *v)
+    void rotateP2V(REALTYPE_A *v)
     {
         rotateP2V(v[0], v[1], v[2], v, v + 1, v + 2);
     }
 
-    void rotateV2P(REALTYPE__ x, REALTYPE__ y, REALTYPE__ z, REALTYPE__ *xr, REALTYPE__ *yr, REALTYPE__ *zr)
+    void rotateV2P(REALTYPE_A x, REALTYPE_A y, REALTYPE_A z, REALTYPE_A *xr, REALTYPE_A *yr, REALTYPE_A *zr)
     {
         *xr = VCS2VAR[0][0] * x + VCS2VAR[0][1] * y + VCS2VAR[0][2] * z;
         *yr = VCS2VAR[1][0] * x + VCS2VAR[1][1] * y + VCS2VAR[1][2] * z;
         *zr = VCS2VAR[2][0] * x + VCS2VAR[2][1] * y + VCS2VAR[2][2] * z;
     }
-    void rotateV2P(REALTYPE__ *v, REALTYPE__ *vr)
+    void rotateV2P(REALTYPE_A *v, REALTYPE_A *vr)
     {
         rotateV2P(v[0], v[1], v[2], vr, vr + 1, vr + 2);
     }

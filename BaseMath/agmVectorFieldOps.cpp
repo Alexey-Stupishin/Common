@@ -20,7 +20,7 @@ CagmVectorFieldOps::CagmVectorFieldOps(int *_N, int *_DphysL, int *_DphysH)
 //-----------------------------------------------------------------------
 CagmVectorFieldOps::CagmVectorFieldOps(const CagmVectorFieldOps& from)
 {
-    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE__ *)from.step);
+    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE_A *)from.step);
 }
 
 //-----------------------------------------------------------------------
@@ -36,7 +36,7 @@ CagmVectorFieldOps& CagmVectorFieldOps::operator=(const CagmVectorFieldOps& from
         return *this;
 
     Delete();
-    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE__ *)from.step);
+    Initialize((int *)from.N, (int *)from.NphysL, (int *)from.NphysH, (REALTYPE_A *)from.step);
 
     return *this;
 }
@@ -52,14 +52,14 @@ uint32_t CagmVectorFieldOps::Delete()
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::Initialize(int *_N, int *_NphysL, int *_NphysH, REALTYPE__ *_step)
+uint32_t CagmVectorFieldOps::Initialize(int *_N, int *_NphysL, int *_NphysH, REALTYPE_A *_step)
 {
 	N[0] = _N[0];
 	N[1] = _N[1];
 	N[2] = _N[2];
-    fieldX = new REALTYPE__ * [N[1]*N[2]];
-    fieldY = new REALTYPE__ * [N[1]*N[2]];
-    fieldZ = new REALTYPE__ * [N[1]*N[2]];
+    fieldX = new REALTYPE_A * [N[1]*N[2]];
+    fieldY = new REALTYPE_A * [N[1]*N[2]];
+    fieldZ = new REALTYPE_A * [N[1]*N[2]];
 
     setNPhys(_NphysL, _NphysH);
     
@@ -114,7 +114,7 @@ uint32_t CagmVectorFieldOps::setNPhys(int *_NphysL, int *_NphysH)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ *CagmVectorFieldOps::getAddress(int v, int kx, int ky, int kz)
+REALTYPE_A *CagmVectorFieldOps::getAddress(int v, int kx, int ky, int kz)
 {
     if (v == 0)
         return &fieldX[fidx(kx, ky, kz)];
@@ -142,7 +142,7 @@ uint32_t CagmVectorFieldOps::SetMargins(CagmVectorFieldOps *source, int *Mmin, i
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::setRefField(REALTYPE__ *X, REALTYPE__ *Y, REALTYPE__ *Z, int *M)
+uint32_t CagmVectorFieldOps::setRefField(REALTYPE_A *X, REALTYPE_A *Y, REALTYPE_A *Z, int *M)
 {
     for (int kz = 0; kz < N[2]; kz++)
         for (int ky = 0; ky < N[1]; ky++)
@@ -156,7 +156,7 @@ uint32_t CagmVectorFieldOps::setRefField(REALTYPE__ *X, REALTYPE__ *Y, REALTYPE_
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::SetSteps(REALTYPE__ *_step)
+uint32_t CagmVectorFieldOps::SetSteps(REALTYPE_A *_step)
 {
     step[0] = _step[0];
     step[1] = _step[1];
@@ -166,7 +166,7 @@ uint32_t CagmVectorFieldOps::SetSteps(REALTYPE__ *_step)
 }
 
 //-----------------------------------------------------------------------
-REALTYPE__ * CagmVectorFieldOps::GetSteps()
+REALTYPE_A * CagmVectorFieldOps::GetSteps()
 {
     return step;
 }
@@ -179,16 +179,16 @@ uint32_t CagmVectorFieldOps::blockF(CagmVectorFieldOps *_B, CagmScalarFieldOps *
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
             {
-                REALTYPE__ w = _w->field[fidx(kx, ky, kz)];
-                REALTYPE__ dw_dx = _gradw->fieldX[fidx(kx, ky, kz)];
-                REALTYPE__ dw_dy = _gradw->fieldY[fidx(kx, ky, kz)];
-                REALTYPE__ dw_dz = _gradw->fieldZ[fidx(kx, ky, kz)];
-                REALTYPE__ Z = _n->field[fidx(kx, ky, kz)];
-                REALTYPE__ dZ_dx = _n->derivative(kx, ky, kz, 0);
-                REALTYPE__ dZ_dy = _n->derivative(kx, ky, kz, 1);
-                REALTYPE__ dZ_dz = _n->derivative(kx, ky, kz, 2);
+                REALTYPE_A w = _w->field[fidx(kx, ky, kz)];
+                REALTYPE_A dw_dx = _gradw->fieldX[fidx(kx, ky, kz)];
+                REALTYPE_A dw_dy = _gradw->fieldY[fidx(kx, ky, kz)];
+                REALTYPE_A dw_dz = _gradw->fieldZ[fidx(kx, ky, kz)];
+                REALTYPE_A Z = _n->field[fidx(kx, ky, kz)];
+                REALTYPE_A dZ_dx = _n->derivative(kx, ky, kz, 0);
+                REALTYPE_A dZ_dy = _n->derivative(kx, ky, kz, 1);
+                REALTYPE_A dZ_dz = _n->derivative(kx, ky, kz, 2);
 
-                //REALTYPE__ dBx_dx = derivative(kx, ky, kz, 0, 0);
+                //REALTYPE_A dBx_dx = derivative(kx, ky, kz, 0, 0);
             }
 
 
@@ -200,7 +200,7 @@ uint32_t CagmVectorFieldOps::cross(CagmVectorFieldOps *a, const CagmVectorFieldO
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ tx, ty, tz;
+    REALTYPE_A tx, ty, tz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -236,7 +236,7 @@ uint32_t CagmVectorFieldOps::rot(CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -306,7 +306,7 @@ uint32_t CagmVectorFieldOps::rot31(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -376,7 +376,7 @@ uint32_t CagmVectorFieldOps::rot42(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -451,7 +451,7 @@ uint32_t CagmVectorFieldOps::rot41(CagmVectorFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -526,7 +526,7 @@ uint32_t CagmVectorFieldOps::rot5(CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ zy, yz, xz, zx, yx, xy;
+    REALTYPE_A zy, yz, xz, zx, yx, xy;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -635,7 +635,7 @@ uint32_t CagmVectorFieldOps::grad(CagmScalarFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -677,7 +677,7 @@ uint32_t CagmVectorFieldOps::grad31(CagmScalarFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -719,7 +719,7 @@ uint32_t CagmVectorFieldOps::grad42(CagmScalarFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -763,7 +763,7 @@ uint32_t CagmVectorFieldOps::grad41(CagmScalarFieldOps *a)
 {
     // check equiv. sizes!
     int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -807,7 +807,7 @@ uint32_t CagmVectorFieldOps::grad5(CagmScalarFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
-    REALTYPE__ dx, dy, dz;
+    REALTYPE_A dx, dy, dz;
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -866,7 +866,7 @@ uint32_t CagmVectorFieldOps::gradScheme(CagmScalarFieldOps *a, int scheme)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::mult(REALTYPE__ c, CagmVectorFieldOps *a)
+uint32_t CagmVectorFieldOps::mult(REALTYPE_A c, CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
 	int kx, ky, kz;
@@ -883,7 +883,7 @@ uint32_t CagmVectorFieldOps::mult(REALTYPE__ c, CagmVectorFieldOps *a)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::mult(REALTYPE__ c)
+uint32_t CagmVectorFieldOps::mult(REALTYPE_A c)
 {
     return mult(c, this);
 }
@@ -971,7 +971,7 @@ uint32_t CagmVectorFieldOps::multPhys(CagmScalarFieldOps *c)
 
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::mult(CagmVectorFieldOps *a, REALTYPE__ *d)
+uint32_t CagmVectorFieldOps::mult(CagmVectorFieldOps *a, REALTYPE_A *d)
 {
 	int kx, ky, kz;
     for (kz = NphysL[2]; kz < NphysH[2]; kz++)
@@ -1159,7 +1159,7 @@ uint32_t CagmVectorFieldOps::shift(int n)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::setZlevel(int wplane, int level, REALTYPE__ w)
+uint32_t CagmVectorFieldOps::setZlevel(int wplane, int level, REALTYPE_A w)
 {
 	int kx, ky;
     for (ky = 0; ky < N[1]; ky++)
@@ -1178,7 +1178,7 @@ uint32_t CagmVectorFieldOps::setZlevel(int wplane, int level, REALTYPE__ w)
 
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::setVector(REALTYPE__ *d)
+uint32_t CagmVectorFieldOps::setVector(REALTYPE_A *d)
 {
 	int kx, ky, kz;
     for (kz = 0; kz < N[2]; kz++)
@@ -1363,10 +1363,10 @@ uint32_t CagmVectorFieldOps::setBounds(CagmVectorFieldOps *boundsx, CagmVectorFi
 }
 
 //-----------------------------------------------------------------------
-//static void l_div_position(REALTYPE__ p, int N, int *k1, REALTYPE__ *tk)
+//static void l_div_position(REALTYPE_A p, int N, int *k1, REALTYPE_A *tk)
 #define l_div_position(p, N, k1, tk) \
 { \
-    if (p >= REALTYPE__((N)-1) || fabs(p-(REALTYPE__((N)-1))) < 1e-5) \
+    if (p >= REALTYPE_A((N)-1) || fabs(p-(REALTYPE_A((N)-1))) < 1e-5) \
     { \
         k1 = (N)-2; \
         tk = 1; \
@@ -1385,7 +1385,7 @@ uint32_t CagmVectorFieldOps::setBounds(CagmVectorFieldOps *boundsx, CagmVectorFi
 }
 
 //-----------------------------------------------------------------------
-//static REALTYPE__ l_get_point(int Ny, REALTYPE__ **tfield, int x1, int y1, int z1, REALTYPE__ tx, REALTYPE__ ty, REALTYPE__ tz)
+//static REALTYPE_A l_get_point(int Ny, REALTYPE_A **tfield, int x1, int y1, int z1, REALTYPE_A tx, REALTYPE_A ty, REALTYPE_A tz)
 #define l_get_point(Ny, tfield, x1, y1, z1, tx, ty, tz) \
     ((1-(tz))* ((1-(ty))* ((1-(tx))*tfield[(y1)     +  (z1)   *Ny][x1] + (tx)*tfield[(y1)     +  (z1)   *Ny][x1+1]) + \
                     (ty)* ((1-(tx))*tfield[((y1)+1) +  (z1)   *Ny][x1] + (tx)*tfield[((y1)+1) +  (z1)   *Ny][x1+1]))  \
@@ -1393,8 +1393,8 @@ uint32_t CagmVectorFieldOps::setBounds(CagmVectorFieldOps *boundsx, CagmVectorFi
                     (ty)* ((1-(tx))*tfield[((y1)+1) + ((z1)+1)*Ny][x1] + (tx)*tfield[((y1)+1) + ((z1)+1)*Ny][x1+1]))  \
     )
 //{
-//    REALTYPE__ B2[2][2];
-//    REALTYPE__ B3[2];
+//    REALTYPE_A B2[2][2];
+//    REALTYPE_A B3[2];
 //
 //    B2[0][0] = (1-tx)*tfield[y1   +  z1   *Ny][x1] + tx*tfield[y1   +  z1   *Ny][x1+1];
 //    B2[0][1] = (1-tx)*tfield[y1   + (z1+1)*Ny][x1] + tx*tfield[y1   + (z1+1)*Ny][x1+1];
@@ -1407,11 +1407,11 @@ uint32_t CagmVectorFieldOps::setBounds(CagmVectorFieldOps *boundsx, CagmVectorFi
 //}
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::stretch(CagmVectorFieldOps *src, Interpolator inetrp, REALTYPE__ p1, REALTYPE__ p2, REALTYPE__ p3)
+uint32_t CagmVectorFieldOps::stretch(CagmVectorFieldOps *src, Interpolator inetrp, REALTYPE_A p1, REALTYPE_A p2, REALTYPE_A p3)
 {
-    REALTYPE__ cx = (REALTYPE__)(src->N[0] - 1)/(REALTYPE__)(N[0] - 1);
-    REALTYPE__ cy = (REALTYPE__)(src->N[1] - 1)/(REALTYPE__)(N[1] - 1);
-    REALTYPE__ cz = (REALTYPE__)(src->N[2] - 1)/(REALTYPE__)(N[2] - 1);
+    REALTYPE_A cx = (REALTYPE_A)(src->N[0] - 1)/(REALTYPE_A)(N[0] - 1);
+    REALTYPE_A cy = (REALTYPE_A)(src->N[1] - 1)/(REALTYPE_A)(N[1] - 1);
+    REALTYPE_A cz = (REALTYPE_A)(src->N[2] - 1)/(REALTYPE_A)(N[2] - 1);
 
     if (inetrp == Lanczos)
     {
@@ -1421,7 +1421,7 @@ uint32_t CagmVectorFieldOps::stretch(CagmVectorFieldOps *src, Interpolator inetr
 
 	int kx, ky, kz;
 	int x1, y1, z1;
-    REALTYPE__ tx, ty, tz;
+    REALTYPE_A tx, ty, tz;
     for (kz = NphysL[2]; kz < NphysH[2]; kz++)
     {
         l_div_position((kz*cz), (src->N[2]), z1, tz);
@@ -1455,7 +1455,7 @@ uint32_t CagmVectorFieldOps::conv(CagmVectorFieldOps *src, CagmScalarFieldOps *w
         for (ky = NphysL[1]+cy; ky < NphysH[1]-cy; ky++)
             for (kx = NphysL[0]+cx; kx < NphysH[0]-cx; kx++)
             {
-                REALTYPE__ sx = 0, sy = 0, sz = 0;
+                REALTYPE_A sx = 0, sy = 0, sz = 0;
                 for (wz = win->NphysL[2]; wz < win->NphysH[2]; wz++)
                 {
                     for (wy = win->NphysL[1]; wy < win->NphysH[1]; wy++)
@@ -1469,7 +1469,7 @@ uint32_t CagmVectorFieldOps::conv(CagmVectorFieldOps *src, CagmScalarFieldOps *w
                         }
                     }
                 }
-                REALTYPE__ xx = src->fieldX[fidx(kx, ky, kz)];
+                REALTYPE_A xx = src->fieldX[fidx(kx, ky, kz)];
                 fieldX[fidx(kx, ky, kz)] = sx; // / M;
                 fieldY[fidx(kx, ky, kz)] = sy; // / M;
                 fieldZ[fidx(kx, ky, kz)] = sz; // / M;
@@ -1479,7 +1479,7 @@ uint32_t CagmVectorFieldOps::conv(CagmVectorFieldOps *src, CagmScalarFieldOps *w
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::inCube(const REALTYPE__ *coord, const REALTYPE__ absBoundAchieve, const REALTYPE__ relBoundAchieve)
+uint32_t CagmVectorFieldOps::inCube(const REALTYPE_A *coord, const REALTYPE_A absBoundAchieve, const REALTYPE_A relBoundAchieve)
 {
     uint32_t out = 0;
     if (coord[0] < relBoundAchieve*N[0] || coord[0] < absBoundAchieve || 
@@ -1496,7 +1496,7 @@ uint32_t CagmVectorFieldOps::inCube(const REALTYPE__ *coord, const REALTYPE__ ab
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::getPoint(const REALTYPE__ *coord, REALTYPE__ *vect)
+uint32_t CagmVectorFieldOps::getPoint(const REALTYPE_A *coord, REALTYPE_A *vect)
 {
     uint32_t out = 0;
     if (coord[0] < 0 || coord[0] > N[0]-1)
@@ -1509,7 +1509,7 @@ uint32_t CagmVectorFieldOps::getPoint(const REALTYPE__ *coord, REALTYPE__ *vect)
     if (!out)
     {
         int x1, y1, z1;
-        REALTYPE__ tx, ty, tz;
+        REALTYPE_A tx, ty, tz;
         l_div_position(coord[0], N[0], x1, tx);
         l_div_position(coord[1], N[1], y1, ty);
         l_div_position(coord[2], N[2], z1, tz);
@@ -1525,7 +1525,7 @@ uint32_t CagmVectorFieldOps::getPoint(const REALTYPE__ *coord, REALTYPE__ *vect)
 uint32_t CagmVectorFieldOps::rotate3D(CagmRotate3D *rotator, bool direction)
 {
     int kx, ky, kz;
-    REALTYPE__ v[3];
+    REALTYPE_A v[3];
     for (kz = 0; kz < N[2]; kz++)
         for (ky = 0; ky < N[1]; ky++)
             for (kx = 0; kx < N[0]; kx++)
@@ -1540,7 +1540,7 @@ uint32_t CagmVectorFieldOps::rotate3D(CagmRotate3D *rotator, bool direction)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::planeDerivative(int layer, REALTYPE__ *d)
+uint32_t CagmVectorFieldOps::planeDerivative(int layer, REALTYPE_A *d)
 {
     int kx, ky;
     for (ky = 0; ky < N[1]; ky++)
@@ -1621,7 +1621,7 @@ uint32_t CagmVectorFieldOps::planeDerivative(int layer, REALTYPE__ *d)
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE__ *d, REALTYPE__ *dd)
+uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE_A *d, REALTYPE_A *dd)
 {
     int kx, ky;
     for (ky = 0; ky < N[1]; ky++)
@@ -1719,7 +1719,7 @@ uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE__ *d, REALTYPE
 // grad:
 /*
     int p1, p2, q1, q2;
-    REALTYPE__ pf, qf;
+    REALTYPE_A pf, qf;
 	kx = 0;
 	for (ky = 0; ky < N[1]; ky++)
 		for (kz = 0; kz < N[2]; kz++)
@@ -1779,7 +1779,7 @@ uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE__ *d, REALTYPE
 // rot
 /*
     int p1, p2, q1, q2;
-    REALTYPE__ pf, qf;
+    REALTYPE_A pf, qf;
 	kx = 0;
 	for (ky = 0; ky < N[1]; ky++)
 		for (kz = 0; kz < N[2]; kz++)

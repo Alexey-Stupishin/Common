@@ -47,8 +47,8 @@ uint32_t CagpWiegelmann::Bind(CagmVectorField *_sourceB, CagmScalarField *_sourc
                            CagmVectorField *_baseField, CagmVectorField *_baseWeight,
                            CagmScalarField *_absField, CagmScalarField *_absWeight, 
                            CagmScalarField *_losField, CagmScalarField *_losWeight, 
-                           REALTYPE__ *_vcos,
-                           CagmVectorFieldOps *_outF, REALTYPE__ *_Lt)
+                           REALTYPE_A *_vcos,
+                           CagmVectorFieldOps *_outF, REALTYPE_A *_Lt)
 {
     sourceB = _sourceB;
     sourceW = _sourceW;
@@ -98,7 +98,7 @@ CagpWiegelmann::~CagpWiegelmann()
 }
 
 //-----------------------------------------------------------------------
-uint32_t CagpWiegelmann::Allocate(int *M, REALTYPE__ *steps)
+uint32_t CagpWiegelmann::Allocate(int *M, REALTYPE_A *steps)
 {
     // base
     vB = new CagmVectorField(M, false);
