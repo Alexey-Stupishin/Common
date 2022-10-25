@@ -2,7 +2,11 @@
 
 #include "stdDefinitions.h"
 #include <stdio.h>
+
+// remove register specifier
+#define IDL_DEBUGGING 2
 #include "idl_export.h"
+
 #include <map>
 #include <string>
 #include "string_ex.h"
