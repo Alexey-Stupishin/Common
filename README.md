@@ -1,2 +1,2 @@
 # Common
-Interproject files for cpp projects
+Common files for AGS C++ projects.
