@@ -74,7 +74,7 @@ int CbinDataStructW::Read(FILE * fid, aslMap<int, 64> *map)
                 data[nRead].N64[k] = dimsize;
             }
         }
-        data[nRead].data = (void *)(new uint8_t[nbytes]);
+        data[nRead].data = new uint8_t[nbytes];
         res = fread(data[nRead].data, sizeof(uint8_t), nbytes, fid);    if (res < nbytes) return -1;
         nRead++;
     }
