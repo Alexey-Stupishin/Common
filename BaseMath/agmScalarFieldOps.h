@@ -8,25 +8,28 @@ class CagmScalarFieldOps
 friend class CagmVectorFieldOps;
 
 public:
-    int N[3];
-    REALTYPE_A step[3];
-    int * GetDimensions()
-    {
-        return N;
-    }
     static uint32_t GetAllocSize(int *N)
     {
         return sizeof(REALTYPE_A)*N[1]*N[2] + sizeof(CagmScalarFieldOps);
     }
 
+public:
+    int N[3];
+    REALTYPE_A step[3];
+
 protected:
-    REALTYPE_A **field;
     int NphysL[3], NphysH[3];
+    REALTYPE_A **field;
 
 public:
 	CagmScalarFieldOps(int *_N, int *_DphysL = nullptr, int *_DphysH = nullptr);
 	CagmScalarFieldOps(const CagmScalarFieldOps&);
 	virtual ~CagmScalarFieldOps();
+
+    int * GetDimensions()
+    {
+        return N;
+    }
 
     CagmScalarFieldOps& operator=(const CagmScalarFieldOps&);
 

@@ -1539,181 +1539,181 @@ uint32_t CagmVectorFieldOps::rotate3D(CagmRotate3D *rotator, bool direction)
     return 0;
 }
 
-//-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::planeDerivative(int layer, REALTYPE_A *d)
-{
-    int kx, ky;
-    for (ky = 0; ky < N[1]; ky++)
-        for (kx = 0; kx < N[0]; kx++)
-        {
-            int bidx = (ky*N[0] + kx)*9;
-            if (kx == 0)
-            {
-                d[bidx]   = -3 * fieldX[fidx(0, ky, layer)] + 4 * fieldX[fidx(1, ky, layer)] - fieldX[fidx(2, ky, layer)];
-                d[bidx+3] = -3 * fieldY[fidx(0, ky, layer)] + 4 * fieldY[fidx(1, ky, layer)] - fieldY[fidx(2, ky, layer)];
-                d[bidx+6] = -3 * fieldZ[fidx(0, ky, layer)] + 4 * fieldZ[fidx(1, ky, layer)] - fieldZ[fidx(2, ky, layer)];
-            }
-            else if (kx == N[0] - 1)
-            {
-                d[bidx]   = fieldX[fidx(N[0]-3, ky, layer)] - 4 * fieldX[fidx(N[0]-2, ky, layer)] + 3 * fieldX[fidx(N[0]-1, ky, layer)];
-                d[bidx+3] = fieldY[fidx(N[0]-3, ky, layer)] - 4 * fieldY[fidx(N[0]-2, ky, layer)] + 3 * fieldY[fidx(N[0]-1, ky, layer)];
-                d[bidx+6] = fieldZ[fidx(N[0]-3, ky, layer)] - 4 * fieldZ[fidx(N[0]-2, ky, layer)] + 3 * fieldZ[fidx(N[0]-1, ky, layer)];
-            }
-            else
-            {
-                d[bidx]   = fieldX[fidx(kx+1, ky, layer)] - fieldX[fidx(kx-1, ky, layer)];
-                d[bidx+3] = fieldY[fidx(kx+1, ky, layer)] - fieldY[fidx(kx-1, ky, layer)];
-                d[bidx+6] = fieldZ[fidx(kx+1, ky, layer)] - fieldZ[fidx(kx-1, ky, layer)];
-            }
-
-            d[bidx] *= 0.5*step[0];
-            d[bidx+3] *= 0.5*step[0];
-            d[bidx+6] *= 0.5*step[0];
-
-            if (ky == 0)
-            {
-                d[bidx+1] = -3 * fieldX[fidx(kx, 0, layer)] + 4 * fieldX[fidx(kx, 1, layer)] - fieldX[fidx(kx, 2, layer)];
-                d[bidx+4] = -3 * fieldY[fidx(kx, 0, layer)] + 4 * fieldY[fidx(kx, 1, layer)] - fieldY[fidx(kx, 2, layer)];
-                d[bidx+7] = -3 * fieldZ[fidx(kx, 0, layer)] + 4 * fieldZ[fidx(kx, 1, layer)] - fieldZ[fidx(kx, 2, layer)];
-            }
-            else if (ky == N[1] - 1)
-            {
-                d[bidx+1] = fieldX[fidx(kx, N[1]-3, layer)] - 4 * fieldX[fidx(kx, N[1]-2, layer)] + 3 * fieldX[fidx(kx, N[1]-1, layer)];
-                d[bidx+4] = fieldY[fidx(kx, N[1]-3, layer)] - 4 * fieldY[fidx(kx, N[1]-2, layer)] + 3 * fieldY[fidx(kx, N[1]-1, layer)];
-                d[bidx+7] = fieldZ[fidx(kx, N[1]-3, layer)] - 4 * fieldZ[fidx(kx, N[1]-2, layer)] + 3 * fieldZ[fidx(kx, N[1]-1, layer)];
-            }
-            else
-            {
-                d[bidx+1] = fieldX[fidx(kx, ky+1, layer)] - fieldX[fidx(kx, ky-1, layer)];
-                d[bidx+4] = fieldY[fidx(kx, ky+1, layer)] - fieldY[fidx(kx, ky-1, layer)];
-                d[bidx+7] = fieldZ[fidx(kx, ky+1, layer)] - fieldZ[fidx(kx, ky-1, layer)];
-            }
-
-            d[bidx+1] *= 0.5*step[1];
-            d[bidx+4] *= 0.5*step[1];
-            d[bidx+7] *= 0.5*step[1];
-
-            if (layer == 0) // should not be
-            {
-                d[bidx+2] = -3 * fieldX[fidx(kx, ky, 0)] + 4 * fieldX[fidx(kx, ky, 1)] - fieldX[fidx(kx, ky, 2)];
-                d[bidx+5] = -3 * fieldY[fidx(kx, ky, 0)] + 4 * fieldY[fidx(kx, ky, 1)] - fieldY[fidx(kx, ky, 2)];
-                d[bidx+8] = -3 * fieldZ[fidx(kx, ky, 0)] + 4 * fieldZ[fidx(kx, ky, 1)] - fieldZ[fidx(kx, ky, 2)];
-            }
-            else if (layer == N[2] - 1)
-            {
-                d[bidx+2] = fieldX[fidx(kx, ky, N[2]-3)] - 4 * fieldX[fidx(kx, ky, N[2]-2)] + 3 * fieldX[fidx(kx, ky, N[2]-1)];
-                d[bidx+5] = fieldY[fidx(kx, ky, N[2]-3)] - 4 * fieldY[fidx(kx, ky, N[2]-2)] + 3 * fieldY[fidx(kx, ky, N[2]-1)];
-                d[bidx+8] = fieldZ[fidx(kx, ky, N[2]-3)] - 4 * fieldZ[fidx(kx, ky, N[2]-2)] + 3 * fieldZ[fidx(kx, ky, N[2]-1)];
-            }
-            else
-            {
-                d[bidx+2] = fieldX[fidx(kx, ky, layer+1)] - fieldX[fidx(kx, ky, layer-1)];
-                d[bidx+5] = fieldY[fidx(kx, ky, layer+1)] - fieldY[fidx(kx, ky, layer-1)];
-                d[bidx+8] = fieldZ[fidx(kx, ky, layer+1)] - fieldZ[fidx(kx, ky, layer-1)];
-            }
-
-            d[bidx+2] *= 0.5*step[2];
-            d[bidx+5] *= 0.5*step[2];
-            d[bidx+8] *= 0.5*step[2];
-        }
-
-    return 0;
-}
-
-//-----------------------------------------------------------------------
-uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE_A *d, REALTYPE_A *dd)
-{
-    int kx, ky;
-    for (ky = 0; ky < N[1]; ky++)
-        for (kx = 0; kx < N[0]; kx++)
-        {
-            int bidx = (ky*N[0] + kx)*9;
-            int didx = (ky*N[0] + kx)*27;
-            if (kx == 0)
-            {
-            }
-            else if (kx == N[0] - 1)
-            {
-            }
-            else
-            {
-                dd[didx   ]   = fieldX[fidx(kx+1, ky, layer)] - 2 * fieldX[fidx(kx, ky, layer)] + fieldX[fidx(kx-1, ky, layer)]; // Bx / dxdx
-                dd[didx+ 9]   = fieldY[fidx(kx+1, ky, layer)] - 2 * fieldY[fidx(kx, ky, layer)] + fieldY[fidx(kx-1, ky, layer)]; // By / dxdx
-                dd[didx+18]   = fieldZ[fidx(kx+1, ky, layer)] - 2 * fieldZ[fidx(kx, ky, layer)] + fieldZ[fidx(kx-1, ky, layer)]; // Bz / dxdx
-                if (ky == 0)
-                {
-                    dd[didx+ 3] = -3 * d[bidx+1] + 4 * d[bidx+10] - d[bidx+19]; // (Bx/dy)/dx
-                    dd[didx+12] = -3 * d[bidx+4] + 4 * d[bidx+13] - d[bidx+22]; // (By/dy)/dx
-                    dd[didx+21] = -3 * d[bidx+7] + 4 * d[bidx+16] - d[bidx+25]; // (Bz/dy)/dx
-                }
-                else if (ky == N[1] - 1)
-                {
-                    dd[didx+ 3] = d[bidx-17] - 4 * d[bidx-8] + 3 * d[bidx+1]; // (Bx/dy)/dx
-                    dd[didx+12] = d[bidx-14] - 4 * d[bidx-5] + 3 * d[bidx+4]; // (By/dy)/dx
-                    dd[didx+21] = d[bidx-11] - 4 * d[bidx-2] + 3 * d[bidx+7]; // (Bz/dy)/dx
-                }
-                else
-                {
-                    dd[didx+ 3] = d[bidx+10] - d[bidx-8]; // (Bx/dy)/dx
-                    dd[didx+12] = d[bidx+13] - d[bidx-5]; // (By/dy)/dx
-                    dd[didx+21] = d[bidx+16] - d[bidx-2]; // (Bz/dy)/dx
-                }
-                if (layer == 0) // should not be
-                {
-                }
-                else if (layer == N[2] - 1)
-                {
-                }
-                else
-                {
-                    dd[didx+ 6] = d[bidx+11] - d[bidx-7]; // (Bx/dz)/dx
-                    dd[didx+15] = d[bidx+14] - d[bidx-4]; // (By/dz)/dx
-                    dd[didx+24] = d[bidx+17] - d[bidx-1]; // (Bz/dz)/dx
-                }
-            }
-
-            dd[didx   ] *= step[0]*step[0];
-            dd[didx+ 9] *= step[0]*step[0];
-            dd[didx+18] *= step[0]*step[0];
-
-            dd[didx+ 3] *= 0.5*step[0];
-            dd[didx+ 1] = dd[didx+3];
-            dd[didx+12] *= 0.5*step[0];
-            dd[didx+10] = dd[didx+12];
-            dd[didx+21] *= 0.5*step[0];
-            dd[didx+19] = dd[didx+21];
-
-            dd[didx+ 6] *= 0.5*step[0];
-            dd[didx+ 2] = dd[didx+6];
-            dd[didx+15] *= 0.5*step[0];
-            dd[didx+11] = dd[didx+15];
-            dd[didx+24] *= 0.5*step[0];
-            dd[didx+20] = dd[didx+24];
-
-            if (ky == 0)
-            {
-            }
-            else if (ky == N[1] - 1)
-            {
-            }
-            else
-            {
-            }
-
-            if (layer == 0) // should not be
-            {
-            }
-            else if (layer == N[2] - 1)
-            {
-            }
-            else
-            {
-            }
-
-        }
-
-    return 0;
-}
+////-----------------------------------------------------------------------
+//uint32_t CagmVectorFieldOps::planeDerivative(int layer, REALTYPE_A *d)
+//{
+//    int kx, ky;
+//    for (ky = 0; ky < N[1]; ky++)
+//        for (kx = 0; kx < N[0]; kx++)
+//        {
+//            int bidx = (ky*N[0] + kx)*9;
+//            if (kx == 0)
+//            {
+//                d[bidx]   = -3 * fieldX[fidx(0, ky, layer)] + 4 * fieldX[fidx(1, ky, layer)] - fieldX[fidx(2, ky, layer)];
+//                d[bidx+3] = -3 * fieldY[fidx(0, ky, layer)] + 4 * fieldY[fidx(1, ky, layer)] - fieldY[fidx(2, ky, layer)];
+//                d[bidx+6] = -3 * fieldZ[fidx(0, ky, layer)] + 4 * fieldZ[fidx(1, ky, layer)] - fieldZ[fidx(2, ky, layer)];
+//            }
+//            else if (kx == N[0] - 1)
+//            {
+//                d[bidx]   = fieldX[fidx(N[0]-3, ky, layer)] - 4 * fieldX[fidx(N[0]-2, ky, layer)] + 3 * fieldX[fidx(N[0]-1, ky, layer)];
+//                d[bidx+3] = fieldY[fidx(N[0]-3, ky, layer)] - 4 * fieldY[fidx(N[0]-2, ky, layer)] + 3 * fieldY[fidx(N[0]-1, ky, layer)];
+//                d[bidx+6] = fieldZ[fidx(N[0]-3, ky, layer)] - 4 * fieldZ[fidx(N[0]-2, ky, layer)] + 3 * fieldZ[fidx(N[0]-1, ky, layer)];
+//            }
+//            else
+//            {
+//                d[bidx]   = fieldX[fidx(kx+1, ky, layer)] - fieldX[fidx(kx-1, ky, layer)];
+//                d[bidx+3] = fieldY[fidx(kx+1, ky, layer)] - fieldY[fidx(kx-1, ky, layer)];
+//                d[bidx+6] = fieldZ[fidx(kx+1, ky, layer)] - fieldZ[fidx(kx-1, ky, layer)];
+//            }
+//
+//            d[bidx] *= 0.5*step[0];
+//            d[bidx+3] *= 0.5*step[0];
+//            d[bidx+6] *= 0.5*step[0];
+//
+//            if (ky == 0)
+//            {
+//                d[bidx+1] = -3 * fieldX[fidx(kx, 0, layer)] + 4 * fieldX[fidx(kx, 1, layer)] - fieldX[fidx(kx, 2, layer)];
+//                d[bidx+4] = -3 * fieldY[fidx(kx, 0, layer)] + 4 * fieldY[fidx(kx, 1, layer)] - fieldY[fidx(kx, 2, layer)];
+//                d[bidx+7] = -3 * fieldZ[fidx(kx, 0, layer)] + 4 * fieldZ[fidx(kx, 1, layer)] - fieldZ[fidx(kx, 2, layer)];
+//            }
+//            else if (ky == N[1] - 1)
+//            {
+//                d[bidx+1] = fieldX[fidx(kx, N[1]-3, layer)] - 4 * fieldX[fidx(kx, N[1]-2, layer)] + 3 * fieldX[fidx(kx, N[1]-1, layer)];
+//                d[bidx+4] = fieldY[fidx(kx, N[1]-3, layer)] - 4 * fieldY[fidx(kx, N[1]-2, layer)] + 3 * fieldY[fidx(kx, N[1]-1, layer)];
+//                d[bidx+7] = fieldZ[fidx(kx, N[1]-3, layer)] - 4 * fieldZ[fidx(kx, N[1]-2, layer)] + 3 * fieldZ[fidx(kx, N[1]-1, layer)];
+//            }
+//            else
+//            {
+//                d[bidx+1] = fieldX[fidx(kx, ky+1, layer)] - fieldX[fidx(kx, ky-1, layer)];
+//                d[bidx+4] = fieldY[fidx(kx, ky+1, layer)] - fieldY[fidx(kx, ky-1, layer)];
+//                d[bidx+7] = fieldZ[fidx(kx, ky+1, layer)] - fieldZ[fidx(kx, ky-1, layer)];
+//            }
+//
+//            d[bidx+1] *= 0.5*step[1];
+//            d[bidx+4] *= 0.5*step[1];
+//            d[bidx+7] *= 0.5*step[1];
+//
+//            if (layer == 0) // should not be
+//            {
+//                d[bidx+2] = -3 * fieldX[fidx(kx, ky, 0)] + 4 * fieldX[fidx(kx, ky, 1)] - fieldX[fidx(kx, ky, 2)];
+//                d[bidx+5] = -3 * fieldY[fidx(kx, ky, 0)] + 4 * fieldY[fidx(kx, ky, 1)] - fieldY[fidx(kx, ky, 2)];
+//                d[bidx+8] = -3 * fieldZ[fidx(kx, ky, 0)] + 4 * fieldZ[fidx(kx, ky, 1)] - fieldZ[fidx(kx, ky, 2)];
+//            }
+//            else if (layer == N[2] - 1)
+//            {
+//                d[bidx+2] = fieldX[fidx(kx, ky, N[2]-3)] - 4 * fieldX[fidx(kx, ky, N[2]-2)] + 3 * fieldX[fidx(kx, ky, N[2]-1)];
+//                d[bidx+5] = fieldY[fidx(kx, ky, N[2]-3)] - 4 * fieldY[fidx(kx, ky, N[2]-2)] + 3 * fieldY[fidx(kx, ky, N[2]-1)];
+//                d[bidx+8] = fieldZ[fidx(kx, ky, N[2]-3)] - 4 * fieldZ[fidx(kx, ky, N[2]-2)] + 3 * fieldZ[fidx(kx, ky, N[2]-1)];
+//            }
+//            else
+//            {
+//                d[bidx+2] = fieldX[fidx(kx, ky, layer+1)] - fieldX[fidx(kx, ky, layer-1)];
+//                d[bidx+5] = fieldY[fidx(kx, ky, layer+1)] - fieldY[fidx(kx, ky, layer-1)];
+//                d[bidx+8] = fieldZ[fidx(kx, ky, layer+1)] - fieldZ[fidx(kx, ky, layer-1)];
+//            }
+//
+//            d[bidx+2] *= 0.5*step[2];
+//            d[bidx+5] *= 0.5*step[2];
+//            d[bidx+8] *= 0.5*step[2];
+//        }
+//
+//    return 0;
+//}
+//
+////-----------------------------------------------------------------------
+//uint32_t CagmVectorFieldOps::planeDerivative2(int layer, REALTYPE_A *d, REALTYPE_A *dd)
+//{
+//    int kx, ky;
+//    for (ky = 0; ky < N[1]; ky++)
+//        for (kx = 0; kx < N[0]; kx++)
+//        {
+//            int bidx = (ky*N[0] + kx)*9;
+//            int didx = (ky*N[0] + kx)*27;
+//            if (kx == 0)
+//            {
+//            }
+//            else if (kx == N[0] - 1)
+//            {
+//            }
+//            else
+//            {
+//                dd[didx   ]   = fieldX[fidx(kx+1, ky, layer)] - 2 * fieldX[fidx(kx, ky, layer)] + fieldX[fidx(kx-1, ky, layer)]; // Bx / dxdx
+//                dd[didx+ 9]   = fieldY[fidx(kx+1, ky, layer)] - 2 * fieldY[fidx(kx, ky, layer)] + fieldY[fidx(kx-1, ky, layer)]; // By / dxdx
+//                dd[didx+18]   = fieldZ[fidx(kx+1, ky, layer)] - 2 * fieldZ[fidx(kx, ky, layer)] + fieldZ[fidx(kx-1, ky, layer)]; // Bz / dxdx
+//                if (ky == 0)
+//                {
+//                    dd[didx+ 3] = -3 * d[bidx+1] + 4 * d[bidx+10] - d[bidx+19]; // (Bx/dy)/dx
+//                    dd[didx+12] = -3 * d[bidx+4] + 4 * d[bidx+13] - d[bidx+22]; // (By/dy)/dx
+//                    dd[didx+21] = -3 * d[bidx+7] + 4 * d[bidx+16] - d[bidx+25]; // (Bz/dy)/dx
+//                }
+//                else if (ky == N[1] - 1)
+//                {
+//                    dd[didx+ 3] = d[bidx-17] - 4 * d[bidx-8] + 3 * d[bidx+1]; // (Bx/dy)/dx
+//                    dd[didx+12] = d[bidx-14] - 4 * d[bidx-5] + 3 * d[bidx+4]; // (By/dy)/dx
+//                    dd[didx+21] = d[bidx-11] - 4 * d[bidx-2] + 3 * d[bidx+7]; // (Bz/dy)/dx
+//                }
+//                else
+//                {
+//                    dd[didx+ 3] = d[bidx+10] - d[bidx-8]; // (Bx/dy)/dx
+//                    dd[didx+12] = d[bidx+13] - d[bidx-5]; // (By/dy)/dx
+//                    dd[didx+21] = d[bidx+16] - d[bidx-2]; // (Bz/dy)/dx
+//                }
+//                if (layer == 0) // should not be
+//                {
+//                }
+//                else if (layer == N[2] - 1)
+//                {
+//                }
+//                else
+//                {
+//                    dd[didx+ 6] = d[bidx+11] - d[bidx-7]; // (Bx/dz)/dx
+//                    dd[didx+15] = d[bidx+14] - d[bidx-4]; // (By/dz)/dx
+//                    dd[didx+24] = d[bidx+17] - d[bidx-1]; // (Bz/dz)/dx
+//                }
+//            }
+//
+//            dd[didx   ] *= step[0]*step[0];
+//            dd[didx+ 9] *= step[0]*step[0];
+//            dd[didx+18] *= step[0]*step[0];
+//
+//            dd[didx+ 3] *= 0.5*step[0];
+//            dd[didx+ 1] = dd[didx+3];
+//            dd[didx+12] *= 0.5*step[0];
+//            dd[didx+10] = dd[didx+12];
+//            dd[didx+21] *= 0.5*step[0];
+//            dd[didx+19] = dd[didx+21];
+//
+//            dd[didx+ 6] *= 0.5*step[0];
+//            dd[didx+ 2] = dd[didx+6];
+//            dd[didx+15] *= 0.5*step[0];
+//            dd[didx+11] = dd[didx+15];
+//            dd[didx+24] *= 0.5*step[0];
+//            dd[didx+20] = dd[didx+24];
+//
+//            if (ky == 0)
+//            {
+//            }
+//            else if (ky == N[1] - 1)
+//            {
+//            }
+//            else
+//            {
+//            }
+//
+//            if (layer == 0) // should not be
+//            {
+//            }
+//            else if (layer == N[2] - 1)
+//            {
+//            }
+//            else
+//            {
+//            }
+//
+//        }
+//
+//    return 0;
+//}
 
 //-----------------------------------------------------------------------
 // grad:

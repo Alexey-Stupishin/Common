@@ -23,27 +23,28 @@ public:
         return sqrt(v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2]);
     }
 
-public:
-    int N[3];
-    REALTYPE_A step[3];
-    int * GetDimensions()
-    {
-        return N;
-    }
     static uint32_t GetAllocSize(int *N)
     {
         return 3*sizeof(REALTYPE_A)*N[1]*N[2] + sizeof(CagmVectorFieldOps);
     }
 
 public:
-    REALTYPE_A **fieldX, **fieldY, **fieldZ;
+    int N[3];
+    REALTYPE_A step[3];
+
 protected:
     int NphysL[3], NphysH[3];
+    REALTYPE_A **fieldX, **fieldY, **fieldZ;
 
 public:
 	CagmVectorFieldOps(int *_N, int *_DphysL = nullptr, int *_DphysH = nullptr);
 	CagmVectorFieldOps(const CagmVectorFieldOps&);
 	virtual ~CagmVectorFieldOps();
+
+    int * GetDimensions()
+    {
+        return N;
+    }
 
     CagmVectorFieldOps& operator=(const CagmVectorFieldOps&);
 
@@ -128,8 +129,8 @@ public:
         int maxResult, int *length, REALTYPE_A *coord, int *status);
 
     uint32_t rotate3D(CagmRotate3D *, bool);
-    uint32_t planeDerivative(int layer, REALTYPE_A *d);
-    uint32_t planeDerivative2(int layer, REALTYPE_A *d, REALTYPE_A *dd);
+    uint32_t planeDerivative(int layer, REALTYPE_A **d);
+    uint32_t planeDerivative2(int layer, REALTYPE_A **d, REALTYPE_A **dd);
 
 protected:
 	uint32_t Initialize(int *_N, int *_NphysL = nullptr, int *_NphysH = nullptr, REALTYPE_A *_step = nullptr);
