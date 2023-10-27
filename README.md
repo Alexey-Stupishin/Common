@@ -7,3 +7,8 @@ Introduced to use as submodule for other projects. Working with submodules can b
 
 Current using:
 * [Magnetic_Field-Library](https://github.com/Alexey-Stupishin/Magnetic-Field_Library)
+
+## Update History
+* 27 Oct 2023, branch "NewParallel"
+	* improve multitask functionality
+	* new implementation of NLFFF parallelization 

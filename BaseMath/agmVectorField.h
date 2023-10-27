@@ -84,8 +84,8 @@ protected:
     {
         data->Copy(allocFieldX, allocFieldY, allocFieldZ);
 
-        REALTYPE_A step[] = {1.0, 1.0, 1.0};
-        SetSteps(step);
+        REALTYPE_A _step[] = {1.0, 1.0, 1.0};
+        SetSteps(_step);
 
         return 0;
     }

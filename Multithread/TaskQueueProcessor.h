@@ -3,6 +3,37 @@
 #include <vector>
 #include <cstddef>
 
+#include <thread>
+#include <queue>
+#include <condition_variable>
+#include <mutex>
+
+#include "console_debug.h"
+
+class ATQPTask;
+
+//---------------------------------------------------------------------------------------
+class ATQPSynchonizer
+{
+protected:
+    std::size_t num_proc;
+
+public:
+    std::size_t             process_counter; // processor, supervisor, TQP.proceed
+
+    std::mutex              mutex_query; // processor, supervisor
+    std::condition_variable check_query; // processor, supervisor
+    std::queue<int>         queue_query; // processor, supervisor, TQP.proceed
+
+    std::vector<std::mutex *>              mutexes_task; // processor, supervisor, TQP.proceed
+    std::vector<std::condition_variable *> checks_task; // processor, supervisor, TQP.proceed
+    std::vector<std::queue<ATQPTask *> *>  queues_task; // processor, supervisor, TQP.proceed
+
+    ATQPSynchonizer(std::size_t num_proc);
+    virtual ~ATQPSynchonizer();
+    void reset();
+};
+
 //---------------------------------------------------------------------------------------
 class ATQPTask
 {
@@ -12,10 +43,10 @@ protected:
     size_t id;
 
 public:
-    ATQPTask(size_t task_id = 0) : id(task_id) {}
-    virtual ~ATQPTask() {}
+    ATQPTask(size_t task_id = 0);
+    virtual ~ATQPTask();
 
-    size_t getID() { return id; }
+    size_t getID();
 };
 
 //---------------------------------------------------------------------------------------
@@ -25,11 +56,11 @@ protected:
     int counter;
 
 public:
-    ATQPTaskFactory() : counter(0) {}
-    virtual ~ATQPTaskFactory() {}
+    ATQPTaskFactory();
+    virtual ~ATQPTaskFactory();
 
     virtual ATQPTask *create() = 0;
-    void initialize(ATQPTask *task) { task->id = counter++; } // ToDo: can be some uuid generation
+    //void initialize(ATQPTask *task);
 };
 
 //---------------------------------------------------------------------------------------
@@ -42,43 +73,14 @@ protected:
     ATQPTaskFactory *factory;
 
 public:
-    ATQPSupervisor(int _n_task, ATQPTaskFactory *_factory) 
-        : n_task(_n_task)
-        , tasks(nullptr)
-        , factory(_factory)
-    { 
-        if (n_task > 0)
-        {
-            tasks = new ATQPTask *[n_task];
-            for (int i = 0; i < n_task; i++)
-                tasks[i] = factory->create();
-        }
+    ATQPSynchonizer *sync;
 
-        reset();
-    }
+public:
+    ATQPSupervisor(int _n_task, ATQPTaskFactory *_factory, ATQPSynchonizer *_sync);
+    virtual ~ATQPSupervisor();
 
-    virtual ~ATQPSupervisor()
-    {
-        for (int i = 0; i < n_task; i++)
-            delete tasks[i];
-        delete[] tasks;
-    }
-
-    bool reset()
-    {
-        current_task = 0;
-        return true;
-    }
-
-    virtual bool getTask(ATQPTask*& task)
-    {
-        task = nullptr;
-        if (current_task >= n_task)
-            return false;
-        task = tasks[current_task];
-        current_task++;
-        return true;
-    }
+    bool reset();
+    virtual bool getTask(ATQPTask*& task);
 };
 
 //---------------------------------------------------------------------------------------
@@ -90,35 +92,37 @@ protected:
     bool init;
 
 public:
-    ATQPProcessor(int _id) : id(_id), init(false) {}
-    virtual ~ATQPProcessor() {}
+    ATQPSynchonizer *sync;
 
-    bool initialized() { return init; }
-    bool reset() { init = false; return init; }
-    int getID() { return id; }
-    virtual bool setTask(ATQPTask *_task)
-    {
-        if (!_task)
-            return true;
-        task = _task;
-        init = true;
-        return false;
-    }
+public:
+    ATQPProcessor(int _id, ATQPSynchonizer *_sync);
+    virtual ~ATQPProcessor();
 
-    virtual ATQPTask* getTask() { return task; }
+    bool initialized();
+    bool reset();
+    int getID();
+    virtual bool setTask(ATQPTask *_task);
+
+    virtual ATQPTask* getTask();
     virtual bool proceed() = 0;
 };
 
 //---------------------------------------------------------------------------------------
 class TaskQueueProcessor
 {
+protected:
+    ATQPSynchonizer *sync;
+    int num_proc;
+
 public:
-    TaskQueueProcessor() {}
-    virtual ~TaskQueueProcessor() {}
+    TaskQueueProcessor(int nThreadsInitial = 0);
+    virtual ~TaskQueueProcessor();
 
     unsigned long proceed(std::vector<ATQPProcessor *>&, ATQPSupervisor *);
+    ATQPSynchonizer *get_sync();
+    int get_num_proc();
 
-    static int getProcInfo(int);
+    static int getProcInfo(int nThreadsInitial = 0);
 
 #ifdef USE_UNIT_TEST
     static void unitTest(int num_proc = 5, int num_tasks = 10);

@@ -199,19 +199,9 @@ uint32_t CagmVectorFieldOps::blockF(CagmVectorFieldOps *_B, CagmScalarFieldOps *
 uint32_t CagmVectorFieldOps::cross(CagmVectorFieldOps *a, const CagmVectorFieldOps *b)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
-    REALTYPE_A tx, ty, tz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				tx = a->fieldY[fidx(kx, ky, kz)]*b->fieldZ[fidx(kx, ky, kz)] - a->fieldZ[fidx(kx, ky, kz)]*b->fieldY[fidx(kx, ky, kz)];
-				ty = a->fieldZ[fidx(kx, ky, kz)]*b->fieldX[fidx(kx, ky, kz)] - a->fieldX[fidx(kx, ky, kz)]*b->fieldZ[fidx(kx, ky, kz)];
-				tz = a->fieldX[fidx(kx, ky, kz)]*b->fieldY[fidx(kx, ky, kz)] - a->fieldY[fidx(kx, ky, kz)]*b->fieldX[fidx(kx, ky, kz)];
-				fieldX[fidx(kx, ky, kz)] = tx;
-				fieldY[fidx(kx, ky, kz)] = ty;
-				fieldZ[fidx(kx, ky, kz)] = tz;
-			}
+        cross_plane(a, b, kz);
 
     return 0;
 }
@@ -234,69 +224,10 @@ uint32_t CagmVectorFieldOps::cross(CagmVectorFieldOps *a)
 //-----------------------------------------------------------------------
 uint32_t CagmVectorFieldOps::rot(CagmVectorFieldOps *a)
 {
-	// check equiv. sizes!
-	int kx, ky, kz;
-    REALTYPE_A zy, yz, xz, zx, yx, xy;
+    // check equiv. sizes!
+    int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-                if (kx == 0)
-                {
-                    zx = - 3*a->fieldZ[fidx(0, ky, kz)] + 4*a->fieldZ[fidx(1, ky, kz)] - a->fieldZ[fidx(2, ky, kz)];
-                    yx = - 3*a->fieldY[fidx(0, ky, kz)] + 4*a->fieldY[fidx(1, ky, kz)] - a->fieldY[fidx(2, ky, kz)];
-                }
-                else if (kx == N[0]-1)
-                {
-                    zx = a->fieldZ[fidx(N[0]-3, ky, kz)] - 4*a->fieldZ[fidx(N[0]-2, ky, kz)] + 3*a->fieldZ[fidx(N[0]-1, ky, kz)];
-                    yx = a->fieldY[fidx(N[0]-3, ky, kz)] - 4*a->fieldY[fidx(N[0]-2, ky, kz)] + 3*a->fieldY[fidx(N[0]-1, ky, kz)];
-                }
-                else
-                {
-                    zx = a->fieldZ[fidx(kx+1, ky, kz)] - a->fieldZ[fidx(kx-1, ky, kz)];
-                    yx = a->fieldY[fidx(kx+1, ky, kz)] - a->fieldY[fidx(kx-1, ky, kz)];
-                }
-
-                if (ky == 0)
-                {
-                    zy = - 3*a->fieldZ[fidx(kx, 0, kz)] + 4*a->fieldZ[fidx(kx, 1, kz)] - a->fieldZ[fidx(kx, 2, kz)];
-                    xy = - 3*a->fieldX[fidx(kx, 0, kz)] + 4*a->fieldX[fidx(kx, 1, kz)] - a->fieldX[fidx(kx, 2, kz)];
-                }
-                else if (ky == N[1]-1)
-                {
-                    zy = a->fieldZ[fidx(kx, N[1]-3, kz)] - 4*a->fieldZ[fidx(kx, N[1]-2, kz)] + 3*a->fieldZ[fidx(kx, N[1]-1, kz)];
-                    xy = a->fieldX[fidx(kx, N[1]-3, kz)] - 4*a->fieldX[fidx(kx, N[1]-2, kz)] + 3*a->fieldX[fidx(kx, N[1]-1, kz)];
-                }
-                else
-                {
-                    zy = a->fieldZ[fidx(kx, ky+1, kz)] - a->fieldZ[fidx(kx, ky-1, kz)];
-                    xy = a->fieldX[fidx(kx, ky+1, kz)] - a->fieldX[fidx(kx, ky-1, kz)];
-                }
-
-                if (kz == 0)
-                {
-                    xz = - 3*a->fieldX[fidx(kx, ky, 0)] + 4*a->fieldX[fidx(kx, ky, 1)] - a->fieldX[fidx(kx, ky, 2)];
-                    yz = - 3*a->fieldY[fidx(kx, ky, 0)] + 4*a->fieldY[fidx(kx, ky, 1)] - a->fieldY[fidx(kx, ky, 2)];
-                }
-                else if (kz == N[2]-1)
-                {
-                    xz = a->fieldX[fidx(kx, ky, N[2]-3)] - 4*a->fieldX[fidx(kx, ky, N[2]-2)] + 3*a->fieldX[fidx(kx, ky, N[2]-1)];
-                    yz = a->fieldY[fidx(kx, ky, N[2]-3)] - 4*a->fieldY[fidx(kx, ky, N[2]-2)] + 3*a->fieldY[fidx(kx, ky, N[2]-1)];
-                }
-                else
-                {
-                    xz = a->fieldX[fidx(kx, ky, kz+1)] - a->fieldX[fidx(kx, ky, kz-1)];
-                    yz = a->fieldY[fidx(kx, ky, kz+1)] - a->fieldY[fidx(kx, ky, kz-1)];
-                }
-
-				fieldX[fidx(kx, ky, kz)] = (zy*step[1] - yz*step[2])*0.5;
-				fieldY[fidx(kx, ky, kz)] = (xz*step[2] - zx*step[0])*0.5;
-				fieldZ[fidx(kx, ky, kz)] = (yx*step[0] - xy*step[1])*0.5;
-				//fieldX[fidx(kx, ky, kz)] = (zy - yz)*0.5;
-				//fieldY[fidx(kx, ky, kz)] = (xz - zx)*0.5;
-				//fieldZ[fidx(kx, ky, kz)] = (yx - xy)*0.5;
-			}
-
+        rot_plane(a, kz);
 
     return 0;
 }
@@ -634,40 +565,9 @@ uint32_t CagmVectorFieldOps::rotScheme(CagmVectorFieldOps *a, int scheme)
 uint32_t CagmVectorFieldOps::grad(CagmScalarFieldOps *a)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
-    REALTYPE_A dx, dy, dz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-                if (kx == 0)
-                    dx = - 3*a->field[fidx(0, ky, kz)] + 4*a->field[fidx(1, ky, kz)] - a->field[fidx(2, ky, kz)];
-                else if (kx == N[0]-1)
-                    dx = a->field[fidx(N[0]-3, ky, kz)] - 4*a->field[fidx(N[0]-2, ky, kz)] + 3*a->field[fidx(N[0]-1, ky, kz)];
-                else
-                    dx = a->field[fidx(kx+1, ky, kz)] - a->field[fidx(kx-1, ky, kz)];
-
-                if (ky == 0)
-                    dy = - 3*a->field[fidx(kx, 0, kz)] + 4*a->field[fidx(kx, 1, kz)] - a->field[fidx(kx, 2, kz)];
-                else if (ky == N[1]-1)
-                    dy = a->field[fidx(kx, N[1]-3, kz)] - 4*a->field[fidx(kx, N[1]-2, kz)] + 3*a->field[fidx(kx, N[1]-1, kz)];
-                else
-                    dy = a->field[fidx(kx, ky+1, kz)] - a->field[fidx(kx, ky-1, kz)];
-
-                if (kz == 0)
-                    dz = - 3*a->field[fidx(kx, ky, 0)] + 4*a->field[fidx(kx, ky, 1)] - a->field[fidx(kx, ky, 2)];
-                else if (kz == N[2]-1)
-                    dz = a->field[fidx(kx, ky, N[2]-3)] - 4*a->field[fidx(kx, ky, N[2]-2)] + 3*a->field[fidx(kx, ky, N[2]-1)];
-                else
-                    dz = a->field[fidx(kx, ky, kz+1)] - a->field[fidx(kx, ky, kz-1)];
-
-				fieldX[fidx(kx, ky, kz)] = dx*0.5*step[0];
-				fieldY[fidx(kx, ky, kz)] = dy*0.5*step[1];
-				fieldZ[fidx(kx, ky, kz)] = dz*0.5*step[2];
-				//fieldX[fidx(kx, ky, kz)] = dx*0.5;
-				//fieldY[fidx(kx, ky, kz)] = dy*0.5;
-				//fieldZ[fidx(kx, ky, kz)] = dz*0.5;
-			}
+        grad_plane(a, kz);
 
     return 0;
 }
@@ -869,15 +769,9 @@ uint32_t CagmVectorFieldOps::gradScheme(CagmScalarFieldOps *a, int scheme)
 uint32_t CagmVectorFieldOps::mult(REALTYPE_A c, CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				fieldX[fidx(kx, ky, kz)] = a->fieldX[fidx(kx, ky, kz)]*c;
-				fieldY[fidx(kx, ky, kz)] = a->fieldY[fidx(kx, ky, kz)]*c;
-				fieldZ[fidx(kx, ky, kz)] = a->fieldZ[fidx(kx, ky, kz)]*c;
-			}
+        mult_plane(c, a, kz);
 
     return 0;
 }
@@ -892,15 +786,9 @@ uint32_t CagmVectorFieldOps::mult(REALTYPE_A c)
 uint32_t CagmVectorFieldOps::mult(CagmScalarFieldOps *c, CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				fieldX[fidx(kx, ky, kz)] = (a->fieldX[fidx(kx, ky, kz)]) * (c->field[fidx(kx, ky, kz)]);
-				fieldY[fidx(kx, ky, kz)] = (a->fieldY[fidx(kx, ky, kz)]) * (c->field[fidx(kx, ky, kz)]);
-				fieldZ[fidx(kx, ky, kz)] = (a->fieldZ[fidx(kx, ky, kz)]) * (c->field[fidx(kx, ky, kz)]);
-			}
+        mult_plane(c, a, kz);
 
     return 0;
 }
@@ -990,15 +878,9 @@ uint32_t CagmVectorFieldOps::mult(CagmVectorFieldOps *a, REALTYPE_A *d)
 uint32_t CagmVectorFieldOps::add(CagmVectorFieldOps *a, CagmVectorFieldOps *b)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				fieldX[fidx(kx, ky, kz)] = a->fieldX[fidx(kx, ky, kz)] + b->fieldX[fidx(kx, ky, kz)];
-				fieldY[fidx(kx, ky, kz)] = a->fieldY[fidx(kx, ky, kz)] + b->fieldY[fidx(kx, ky, kz)];
-				fieldZ[fidx(kx, ky, kz)] = a->fieldZ[fidx(kx, ky, kz)] + b->fieldZ[fidx(kx, ky, kz)];
-			}
+        add_plane(a, b, kz);
 
     return 0;
 }
@@ -1036,15 +918,9 @@ uint32_t CagmVectorFieldOps::addPhys(CagmVectorFieldOps *a)
 uint32_t CagmVectorFieldOps::sub(CagmVectorFieldOps *a, CagmVectorFieldOps *b)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				fieldX[fidx(kx, ky, kz)] = a->fieldX[fidx(kx, ky, kz)] - b->fieldX[fidx(kx, ky, kz)];
-				fieldY[fidx(kx, ky, kz)] = a->fieldY[fidx(kx, ky, kz)] - b->fieldY[fidx(kx, ky, kz)];
-				fieldZ[fidx(kx, ky, kz)] = a->fieldZ[fidx(kx, ky, kz)] - b->fieldZ[fidx(kx, ky, kz)];
-			}
+        sub_plane(a, b, kz);
 
     return 0;
 }
@@ -1082,15 +958,9 @@ uint32_t CagmVectorFieldOps::subPhys(CagmVectorFieldOps *a)
 uint32_t CagmVectorFieldOps::neg(CagmVectorFieldOps *a)
 {
 	// check equiv. sizes!
-	int kx, ky, kz;
+	int kz;
     for (kz = 0; kz < N[2]; kz++)
-        for (ky = 0; ky < N[1]; ky++)
-            for (kx = 0; kx < N[0]; kx++)
-			{
-				fieldX[fidx(kx, ky, kz)] = -a->fieldX[fidx(kx, ky, kz)];
-				fieldY[fidx(kx, ky, kz)] = -a->fieldY[fidx(kx, ky, kz)];
-				fieldZ[fidx(kx, ky, kz)] = -a->fieldZ[fidx(kx, ky, kz)];
-			}
+        neg_plane(a, kz);
 
     return 0;
 }

@@ -195,6 +195,11 @@ public:
         return 0;
     }
 
+    uint32_t GetData(CbinDataStruct* data)
+    {
+        return data->Create(N, allocField);
+    }
+
     uint32_t Weight(int type, REALTYPE_A bound, int *xb, int *yb, int *zb)
     {
         int kx, ky, kz;
